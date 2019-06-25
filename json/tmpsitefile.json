@@ -1,0 +1,31 @@
+{
+   "model_setup": 
+	  {
+      "siteid":1,
+	  "description_line1": "Field simulation",
+	  "generation_date": "2016/05/04 00:00PM",
+	  "nvcn": "4",
+	  "outflow_release_method_isao": "0"
+	  },
+   "geographic":{
+      "latitude_ylat": "41.4607",
+	  "longitude_xlog": "-84.9753",
+	  "elevation_elev": "279.00"},
+    "runoff":{
+	  "peakrunoffrate_apm": "1.00"},
+	"co2":{
+	  "co2conc_atmos_co2x": "330.00"},
+	"nitrogen":{
+	  "no3n_irrigation_cqnx": "0.00",
+	  "nitrogen_conc_rainfall_rfnx": "0.00"
+	  },
+	"manure":{
+	  "manure_p_app_upr": "0.00",
+	  "manure_n_app_unr": "0.00"},
+	"irrigation":{
+	  "auto_irrig_adj_fir0": "0.00"},
+	"channel":{
+	  "basin_channel_length_bchl": "0.00",
+	  "basin_chalnel_slp_bchs": "0.00"}
+   
+}

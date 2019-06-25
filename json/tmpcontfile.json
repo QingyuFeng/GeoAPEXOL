@@ -1,0 +1,119 @@
+{
+	   "model_setup":
+	   {
+	   "yearstorun_nbyr": "30",
+	   "begin_year_iyr": "1986",
+	   "begin_month_imo": "1",
+	   "begin_day_ida": "1",
+	   "output_freq_ipd": "3",
+	   "data_dir_idir": "0",
+	   "real_time_nstp": "0",
+	   "output_subareanum_isap": "0",
+	   "leap_year_lpyr": "0"
+	   },
+	   
+	   "geography":
+	   {
+	   "latitude_source_iazm": "0",
+	   "average_upland_slope_chso": "0.50",
+	   "channel_bottom_woverd_bwd": "5.00",
+	   "max_groundwater_storage_gwso": "50.00",
+	   "groundwater_resident_rfto": "0.00",
+	   "fraction_ponds_pco0": "0.00"
+	   },
+	   
+	   "flood_routing":
+	   {
+	   "flood_routing_ihy": "0",
+	   "floodplain_over_channel_fcw": "10.00",
+	   "floodplain_ksat_fpsc": "0.10",
+	   "routing_threshold_vsc_qth": "5.00",
+	   "interval_floodrouting_dthy": "0.00",
+	   "vsc_threshold_stnd": "5.00"
+	   },
+	   
+	   "weather":
+	   {
+  	   "weather_in_var_ngn": "0",
+	   "random_seeds_ign": "0",
+	   "date_weather_duplicate_igsd": "0",
+	   "pet_method_iet" : "0",
+	   "number_generator_seeds_igmx": "0",
+	   "yrs_max_mon_rainfall_ywi": "10.00",
+	   "wetdry_prob_bta": "0.75",
+	   "param_exp_rainfall_dist_expk": "1.30",
+	   "coef_rainfalldiretow_bxct": "0.00",
+	   "coef_rainfalldirston_byct": "0.00"
+	   },
+	   
+	   "runoff_sim":
+	   {
+	   "stochastic_cn_code_iscn": "0",
+	   "peak_rate_method_ityp": "-1",
+	   "non_varying_cn_nvcn": "4",
+	   "runoff_method_infl": "0",
+	   "field_capacity_wilting_isw": "0",
+	   "atecedent_period_iwtb": "0",
+	   "channel_capacity_flow_qg": "25.00",
+	   "exp_watershed_area_flowrate_qcf": "0.50",
+	   "returnflow_ratio_rfpo": "0.50",
+	   "ksat_adj_sato": "1.00"
+	   },
+	   
+	   "water_erosion":
+	   {
+	   "static_soil_code_ista": "0",
+	   "slope_length_steep_islf": "0",
+	   "water_erosion_equation_drv": "6.00",
+	   "usle_c_channel_rcc0": "0.70",
+	   "msi_input_1": "0.56",
+	   "msi_input_2": "0.56",
+	   "msi_input_3": "0.12",
+	   "msi_input_4": "0.12"
+	   },
+	   
+	   "wind_erosion":
+	   {
+	   "field_length_fl": "2.00",
+	   "field_width_fw": "1.00",
+	   "field_length_angle_ang": "0.00",
+	   "windspeed_distribution_uxp": "0.30",
+	   "soil_partical_diameter_diam": "500.00",
+	   "wind_erosion_adj_acw": "1.00"
+	   },
+	   
+	   "management":
+	   {
+	   "automatic_hu_schedule_ihus": "0",
+	   "manure_application_mnul": "0",
+	   "lagoon_pumping_lpd": "0",
+	   "solid_manure_mscp": "0",
+	   "minimum_interval_automow_imw": "0",
+	   "auto_p_ipat": "0",
+	   "grazing_mode_ihrd": "0",
+	   "pest_damage_scaling_pstx": "1.00",
+	   "grazing_limit_gzl0": "0.00",
+	   "cultivation_start_year_rtn0": "0.00"
+	   },
+	   
+	   "nutrient_loss":
+	   {
+	   "pesticide_mass_conc_masp": "0",
+	   "enrichment_ratio_iert": "1",
+	   "soluble_p_estimate_lbp": "1",
+	   "n_p_uptake_curve_nupc": "1",
+	   "denitrification_idnt": "1",
+	   "avg_conc_n_rainfall_rfn": "0.80",
+	   "no3n_conc_irrig_cqn": "0.00",
+	   "salt_conc_irrig_cslt": "1.58"
+	   },
+	   
+	   "air_quality":
+	   {
+	   "air_quality_code_naq": "0",
+	   "co2_ico2": "0",
+	   "o2_function_iox": "0",
+	   "co2_conc_atom_co2": "330.00"
+	   }
+   
+}

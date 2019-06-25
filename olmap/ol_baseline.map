@@ -1,0 +1,71 @@
+MAP
+#
+# // Start of map file
+#
+NAME IN 
+STATUS ON
+SIZE 600 600 
+EXTENT -88.058499 37.771742 -84.784579 41.760592 
+ 
+UNITS DD 
+IMAGECOLOR 255 255 255 
+
+# // you may need to change this to match your MapServer build
+IMAGETYPE png24 
+IMAGEQUALITY 100
+
+#
+# // Projection definition, consult the PROJ.4 documentation for parameter discussion
+#
+PROJECTION
+#  "proj=latlong"
+#  "ellps=GRS80"
+#  "datum=NAD27"
+  "init=epsg:4326"
+END
+
+web
+    metadata
+      wms_srs "EPSG:4326 EPSG:54004"
+    end
+end
+
+QUERYMAP
+  SIZE 200 200
+  STATUS ON
+  STYLE HILITE
+  COLOR 255 0 0
+END
+
+SYMBOL
+  NAME 'circle'
+  TYPE ellipse
+  FILLED true
+  POINTS
+    1 1
+  END
+END
+
+#
+# // Start of legend
+#
+LEGEND
+  IMAGECOLOR 255 255 255
+  KEYSIZE 15 10
+  LABEL
+    TYPE BITMAP
+    SIZE TINY 
+    COLOR 0 0 0
+  END
+  STATUS ON
+END
+
+OUTPUTFORMAT
+  NAME png
+  DRIVER "GD/PNG"
+  MIMETYPE "image/png"
+  IMAGEMODE RGB 
+  EXTENSION "png"
+  FORMATOPTION "INTERLACE=ON"
+END
+

@@ -1,0 +1,16 @@
+table#stattb1{
+    width:80%;   
+}
+
+
+table#stattb1 th{
+    border: 1px solid black;
+    text-align: center;
+}
+
+
+table#stattb1 td{
+    border: 1px solid grey;
+    text-align: center;
+}
+

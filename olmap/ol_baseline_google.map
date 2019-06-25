@@ -1,0 +1,104 @@
+MAP
+#
+# // Start of map file
+#
+#
+# This is just the beginning of a mapserver map file that wepp specific layers will be added to by the php
+# code. The type of layers that will be added are:
+#  - Channels-
+#  - Subcatchments-
+#  - Flowpath erosion results-
+#  - Representative hillslope erosion results-
+#
+#
+# Jim Frankenberger
+# September 2010
+#
+CONFIG "MS_ERRORFILE" "/var/www/html/tmp/ms_error.txt"
+DEBUG 5
+NAME IN 
+STATUS ON
+SIZE 600 600 
+ 
+UNITS METERS 
+IMAGECOLOR 255 255 255 
+
+# // you may need to change this to match your MapServer build
+IMAGETYPE png24 
+IMAGEQUALITY 100
+WEB
+  METADATA
+    "wms_title" "WEPP"
+    "wms_enable_request" "*"
+    "wms_format" "image/png"
+  END
+END
+
+#
+# // Projection definition, consult the PROJ.4 documentation for parameter discussion
+#
+PROJECTION
+#  "proj=latlong"
+#  "ellps=GRS80"
+#  "datum=NAD27"
+  "init=epsg:3857"
+END
+
+web
+    IMAGEPATH "/var/www/html/tmp/"
+    IMAGEURL "/tmp/"
+
+    metadata
+      wms_srs "EPSG:3857"
+    end
+end
+
+QUERYMAP
+  SIZE 200 200
+  STATUS ON
+  STYLE HILITE
+  COLOR 255 0 0
+END
+
+SYMBOL
+  NAME 'circle'
+  TYPE ellipse
+  FILLED true
+  POINTS
+    1 1
+  END
+END
+
+SYMBOL
+  NAME 'pin'
+  TYPE pixmap
+  IMAGE '/var/www/html/images/pin.png'
+END
+
+#
+# // Start of legend
+#
+LEGEND
+  IMAGECOLOR 255 255 255
+  KEYSIZE 15 10
+  LABEL
+    TYPE BITMAP
+    SIZE TINY 
+    COLOR 0 0 0
+  END
+  STATUS ON
+END
+
+OUTPUTFORMAT
+  NAME png
+  DRIVER "AGG/PNG"
+  MIMETYPE "image/png"
+  IMAGEMODE RGB 
+  EXTENSION "png"
+  FORMATOPTION "INTERLACE=ON"
+END
+
+#
+# There is no 'END' for the map because as the layers are added to this they
+# are responsible for adding the last 'END' to close the map (see php code). 
+#

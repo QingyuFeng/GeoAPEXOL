@@ -1,0 +1,46 @@
+{	
+
+    "demcellsize":30.0, 
+
+	"extent": 0,
+	"zoomLoc": "47906",
+    "izoom": "0",
+
+	"oltstep": 0,
+	"fldstep": 0,
+
+	"criticalarea": 9,
+
+	"extxll": 0,
+    "extyll": 0,
+	"extxur": 0,
+    "extyur": 0,
+
+	"utmzone": 0,
+
+    "jsot": "Empty",
+    "jso3857": "Empty",
+
+    "jsfd":"Empty",
+    "jsf3857":"Empty",
+
+	"fldwsno": 0,
+
+	"latitude": 38.9,
+	"longitude": -98.7,
+	
+    "fldbfr": 0.025 ,
+
+    "tiledep": "Tile_not_installed",
+
+    "dlystartyr": 2003,
+    "dlyendyr": 2013, 
+
+    "runscenario":{
+        "s1":"nass2016",
+        "s1_full":"NASS 2016"
+    }, 
+    
+    "inewapexrun":0
+
+}

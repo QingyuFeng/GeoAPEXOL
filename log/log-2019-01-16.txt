@@ -1,0 +1,513 @@
+Wed Jan 16 01:31:09 2019|hf634jl3qkef90gbal4i9qn75u|Working Directory: '/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u'<br>
+Wed Jan 16 01:31:09 2019|hf634jl3qkef90gbal4i9qn75u|Setup Session Directory|/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u
+Wed Jan 16 01:31:13 2019|hf634jl3qkef90gbal4i9qn75u|Working Directory: '/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u'<br>
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|Working Directory: '/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u'<br>
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|<br>Saving field boundary to geojson<br>
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|<br>About to run:gdal_translate -projwin -87.166643214226 40.556957437331 -87.000507044792 40.396119465426 /home/gis/ned_index.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/nindex.tif<br>
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|
+
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/nindex.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/nindex.asc
+Wed Jan 16 01:31:23 2019|hf634jl3qkef90gbal4i9qn75u|
+
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/nindex.asc /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/nindexout.txt<br><br>
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/slice_ned.tif -ul_lr -87.116643214226 40.506957437331 -87.050507044792 40.446119465426  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/slice_ned.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/utmSlice.tif
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|
+
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|Extracting NASS
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|getting stream network for the extent
+Wed Jan 16 01:31:24 2019|hf634jl3qkef90gbal4i9qn75u|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demfel.tif<br>
+Wed Jan 16 01:31:25 2019|hf634jl3qkef90gbal4i9qn75u|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 01:31:26 2019|hf634jl3qkef90gbal4i9qn75u|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|getting watersheds for field boundary
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|<br><br>Running TauDEM: gridnet Without outlet <br><br>
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/gord.tif<br>
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|Running TauDEM: StreamNet without outlet
+Wed Jan 16 01:31:27 2019|hf634jl3qkef90gbal4i9qn75u|<br><br>/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/srcStrNet.tif -ord /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/stream.shp -w /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.tif<br><br>
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|Convert field boundary from json to shapefile
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|ogr2ogr -a_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80'  -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/fieldbdy.json
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|Finding subareas covered by the field boundary\n
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|Finding subareas covered by the field boundary
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|gdalwarp -cutline /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demwfld.tif
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demwfld.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demwfld.asc
+Wed Jan 16 01:31:28 2019|hf634jl3qkef90gbal4i9qn75u|python /var/www/html/v2geoapexol/gisutils/getWatershedsbyField.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u /var/www/html/v2geoapexol/
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw1.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw1
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw10.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw10
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw2.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw2
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw3.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw3
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw4.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw4
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw5.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw5
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw6.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw6
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw7.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw7
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw8.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw8
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:31 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/recdemw9.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/shprecdemw9
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws1.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws1.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws10.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws10.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws2.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws2.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws3.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws3.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws4.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws4.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws5.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws5.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws6.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws6.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws7.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws7.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws8.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws8.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -ot Byte /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/wsnorecws9.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/reclademw/b8wsnorecws9.tif
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|Getting the gdalinfo of demw for conversion
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|gdalinfo -stats -json /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demwstats.json
+Wed Jan 16 01:31:32 2019|hf634jl3qkef90gbal4i9qn75u|Updating map files for watershed with field
+Wed Jan 16 01:31:35 2019|hf634jl3qkef90gbal4i9qn75u|Working Directory: '/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u'<br>
+Wed Jan 16 01:31:35 2019|hf634jl3qkef90gbal4i9qn75u|Extracting soils for the watershed
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|Extracting landuse for the watershed
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|Processing demw to for display
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|converting tif to ESRI shapefile
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_polygonize.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/esridemw
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|Converting TIF to ASC
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/demw.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/plen.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/plen.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/utmSlice.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/gislayers/elev.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/landuse/nass.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/soils/soilgrid.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/soils/soil.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/sd8Slope.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/srcStrNet.tif /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u/taudemlayers/streamnet.asc
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 01:31:44 2019|hf634jl3qkef90gbal4i9qn75u|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldcalwssubvars.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 01:31:50 2019|hf634jl3qkef90gbal4i9qn75u|Copy template tmpsitefile.json to the apexrun folder
+Wed Jan 16 01:31:50 2019|hf634jl3qkef90gbal4i9qn75u|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldwriteapexinputs.py /home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u /var/www/html/v2geoapexol/gisutils/clinear
+Wed Jan 16 01:33:43 2019|hf634jl3qkef90gbal4i9qn75u|Working Directory: '/home/apex/usrruns_webgis/hf634jl3qkef90gbal4i9qn75u'<br>
+Wed Jan 16 01:33:43 2019|hf634jl3qkef90gbal4i9qn75u|Extracting soils for the watershed
+Wed Jan 16 01:33:52 2019|hf634jl3qkef90gbal4i9qn75u|Extracting landuse for the watershed
+Wed Jan 16 01:33:52 2019|hf634jl3qkef90gbal4i9qn75u|Processing demw to for display
+Wed Jan 16 01:34:10 2019|id9cdhd2ejc3qb3hh6ftc8rups|Working Directory: '/home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups'<br>
+Wed Jan 16 01:34:10 2019|id9cdhd2ejc3qb3hh6ftc8rups|Setup Session Directory|/home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups
+Wed Jan 16 01:34:14 2019|id9cdhd2ejc3qb3hh6ftc8rups|Working Directory: '/home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups'<br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|Working Directory: '/home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups'<br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>Saving field boundary to geojson<br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>About to run:gdal_translate -projwin -87.096535634995 40.543778013365 -86.915293264389 40.38293791412 /home/gis/ned_index.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/nindex.tif<br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|
+
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/nindex.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/nindex.asc
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|
+
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/nindex.asc /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/nindexout.txt<br><br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/slice_ned.tif -ul_lr -87.046535634995 40.493778013365 -86.965293264389 40.43293791412  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/slice_ned.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/utmSlice.tif
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|
+
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|Extracting NASS
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|getting stream network for the extent
+Wed Jan 16 01:34:24 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demfel.tif<br>
+Wed Jan 16 01:34:25 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 01:34:26 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 01:34:26 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 01:34:27 2019|id9cdhd2ejc3qb3hh6ftc8rups|getting watersheds for field boundary
+Wed Jan 16 01:34:27 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br><br>Running TauDEM: gridnet Without outlet <br><br>
+Wed Jan 16 01:34:27 2019|id9cdhd2ejc3qb3hh6ftc8rups|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/gord.tif<br>
+Wed Jan 16 01:34:27 2019|id9cdhd2ejc3qb3hh6ftc8rups|Running TauDEM: StreamNet without outlet
+Wed Jan 16 01:34:27 2019|id9cdhd2ejc3qb3hh6ftc8rups|<br><br>/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/srcStrNet.tif -ord /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/stream.shp -w /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.tif<br><br>
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|Convert field boundary from json to shapefile
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|ogr2ogr -a_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80'  -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/fieldbdy.json
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|Finding subareas covered by the field boundary\n
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|Finding subareas covered by the field boundary
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdalwarp -cutline /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demwfld.tif
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demwfld.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demwfld.asc
+Wed Jan 16 01:34:28 2019|id9cdhd2ejc3qb3hh6ftc8rups|python /var/www/html/v2geoapexol/gisutils/getWatershedsbyField.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups /var/www/html/v2geoapexol/
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw1.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw1
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw10.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw10
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw11.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw11
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw2.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw2
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw3.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw3
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw4.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw4
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:32 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw5.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw5
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw6.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw6
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw7.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw7
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw8.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw8
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/recdemw9.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/shprecdemw9
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws1.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws1.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws10.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws10.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws11.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws11.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws2.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws2.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws3.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws3.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws4.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws4.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws5.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws5.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws6.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws6.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws7.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws7.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws8.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws8.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting 32bit tif to 8 bit tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -ot Byte /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/wsnorecws9.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/reclademw/b8wsnorecws9.tif
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|Getting the gdalinfo of demw for conversion
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdalinfo -stats -json /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demwstats.json
+Wed Jan 16 01:34:33 2019|id9cdhd2ejc3qb3hh6ftc8rups|Updating map files for watershed with field
+Wed Jan 16 01:34:41 2019|id9cdhd2ejc3qb3hh6ftc8rups|Working Directory: '/home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups'<br>
+Wed Jan 16 01:34:41 2019|id9cdhd2ejc3qb3hh6ftc8rups|Extracting soils for the watershed
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|Extracting landuse for the watershed
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|Processing demw to for display
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|converting tif to ESRI shapefile
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_polygonize.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/esridemw
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|Converting TIF to ASC
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/demw.asc
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/plen.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/plen.asc
+Wed Jan 16 01:34:50 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/utmSlice.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/gislayers/elev.asc
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/landuse/nass.asc
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/soils/soilgrid.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/soils/soil.asc
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/sd8Slope.asc
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/srcStrNet.tif /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups/taudemlayers/streamnet.asc
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 01:34:51 2019|id9cdhd2ejc3qb3hh6ftc8rups|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldcalwssubvars.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 01:34:59 2019|id9cdhd2ejc3qb3hh6ftc8rups|Copy template tmpsitefile.json to the apexrun folder
+Wed Jan 16 01:34:59 2019|id9cdhd2ejc3qb3hh6ftc8rups|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldwriteapexinputs.py /home/apex/usrruns_webgis/id9cdhd2ejc3qb3hh6ftc8rups /var/www/html/v2geoapexol/gisutils/clinear
+Wed Jan 16 15:39:08 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:39:08 2019|rr09h1u8p0vi86p940i5hejhei|Setup Session Directory|/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei
+Wed Jan 16 15:39:11 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|Extract DEM at extent: -87.04993241963689 40.469592852207796 -86.94342225439621 40.52358956750348
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|<br>About to run:gdal_translate -projwin -87.099932419637 40.573589567503 -86.893422254396 40.419592852208 /home/gis/ned_index.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif<br>
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindexout.txt<br><br>
+Wed Jan 16 15:39:15 2019|rr09h1u8p0vi86p940i5hejhei|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif -ul_lr -87.049932419637 40.523589567503 -86.943422254396 40.469592852208  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 15:39:16 2019|rr09h1u8p0vi86p940i5hejhei|Extracting NASS
+Wed Jan 16 15:39:16 2019|rr09h1u8p0vi86p940i5hejhei|Reprojecting NED
+Wed Jan 16 15:39:16 2019|rr09h1u8p0vi86p940i5hejhei|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif
+Wed Jan 16 15:39:16 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:39:16 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif<br>
+Wed Jan 16 15:39:17 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 15:39:18 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 15:39:18 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Saving outlet to geojson
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM to get watershed with selected outlet
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/moveoutletstostrm -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/outletpnt.json -om /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -md 100<br>
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Finished running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:39:23 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -nc
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: gridnet With outlet
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/gord.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: gridnet With outlet
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: Threshold
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif-thresh<br>
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: Threshold
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:39:24 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif -ord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/stream.shp -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -w /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Processing demw to for display
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|gdalinfo -stats -json /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwstats.json
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Getting converting values of demw.tif 0 to max + 10 
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|gdal_calc.py -A /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif --outfile=/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif --calc="A*(A>0)+10*(A==0)"
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwmax8bit.tif
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/esridemw
+Wed Jan 16 15:39:25 2019|rr09h1u8p0vi86p940i5hejhei|Updating map files for watershed with outlet
+Wed Jan 16 15:39:27 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:39:27 2019|rr09h1u8p0vi86p940i5hejhei|Extracting soils for the watershed
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|Extracting landuse for the watershed
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|Converting TIF to ASC
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/elev.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nass.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soilgrid.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soil.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/streamnetolt.asc
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 15:39:33 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltcalwssubvars.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 15:39:35 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltwriteapexinputs.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/gisutils/clinear
+Wed Jan 16 15:42:16 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:16 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:16 2019|rr09h1u8p0vi86p940i5hejhei|Setup Session Directory|/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei
+Wed Jan 16 15:42:19 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|Extract DEM at extent: -87.07052239143971 40.43587629608905 -86.96752556526786 40.488118792009516
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|<br>About to run:gdal_translate -projwin -87.12052239144 40.53811879201 -86.917525565268 40.385876296089 /home/gis/ned_index.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif<br>
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindexout.txt<br><br>
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif -ul_lr -87.07052239144 40.48811879201 -86.967525565268 40.435876296089  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|Extracting NASS
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|Reprojecting NED
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif
+Wed Jan 16 15:42:24 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:42:25 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif<br>
+Wed Jan 16 15:42:25 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 15:42:27 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 15:42:27 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Saving outlet to geojson
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM to get watershed with selected outlet
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/moveoutletstostrm -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/outletpnt.json -om /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -md 100<br>
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Finished running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -nc
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: gridnet With outlet
+Wed Jan 16 15:42:36 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/gord.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: gridnet With outlet
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: Threshold
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif-thresh<br>
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: Threshold
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif -ord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/stream.shp -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -w /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Processing demw to for display
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:42:37 2019|rr09h1u8p0vi86p940i5hejhei|gdalinfo -stats -json /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwstats.json
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|Getting converting values of demw.tif 0 to max + 10 
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_calc.py -A /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif --outfile=/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif --calc="A*(A>0)+10*(A==0)"
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwmax8bit.tif
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/esridemw
+Wed Jan 16 15:42:38 2019|rr09h1u8p0vi86p940i5hejhei|Updating map files for watershed with outlet
+Wed Jan 16 15:42:39 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:42:39 2019|rr09h1u8p0vi86p940i5hejhei|Extracting soils for the watershed
+Wed Jan 16 15:42:43 2019|rr09h1u8p0vi86p940i5hejhei|Extracting landuse for the watershed
+Wed Jan 16 15:42:43 2019|rr09h1u8p0vi86p940i5hejhei|Converting TIF to ASC
+Wed Jan 16 15:42:43 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.asc
+Wed Jan 16 15:42:43 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.asc
+Wed Jan 16 15:42:43 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/elev.asc
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nass.asc
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soilgrid.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soil.asc
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.asc
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/streamnetolt.asc
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 15:42:44 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltcalwssubvars.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 15:42:45 2019|rr09h1u8p0vi86p940i5hejhei|Copy template tmpsitefile.json to the apexrun folder
+Wed Jan 16 15:42:45 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltwriteapexinputs.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/gisutils/clinear
+Wed Jan 16 15:44:27 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:27 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:27 2019|rr09h1u8p0vi86p940i5hejhei|Setup Session Directory|/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei
+Wed Jan 16 15:44:30 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|Extract DEM at extent: -87.06892359599772 40.404789865323266 -86.86292994365397 40.5092825470644
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|<br>About to run:gdal_translate -projwin -87.118923595998 40.559282547064 -86.812929943654 40.354789865323 /home/gis/ned_index.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif<br>
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindexout.txt<br><br>
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif -ul_lr -87.068923595998 40.509282547064 -86.862929943654 40.404789865323  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|Extracting NASS
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|Reprojecting NED
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:44:33 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif<br>
+Wed Jan 16 15:44:34 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 15:44:47 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 15:44:47 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Saving outlet to geojson
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM to get watershed with selected outlet
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/moveoutletstostrm -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/outletpnt.json -om /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -md 100<br>
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Finished running TauDEM: MoveOutletstoStreams
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -nc
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: AREAD8 With outlet
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: gridnet With outlet
+Wed Jan 16 15:44:54 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/gord.tif -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: gridnet With outlet
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: Threshold
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif-thresh<br>
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: Threshold
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContAreaOlt.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif -ord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/stream.shp -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/mvoutlet.json -w /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Finished Running TauDEM: StreamNet with outlet
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Processing demw to for display
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|gdalinfo -stats -json /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwstats.json
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|Getting converting values of demw.tif 0 to max + 10 
+Wed Jan 16 15:44:55 2019|rr09h1u8p0vi86p940i5hejhei|gdal_calc.py -A /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif --outfile=/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif --calc="A*(A>0)+10*(A==0)"
+Wed Jan 16 15:44:56 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:44:56 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw0tomax.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwmax8bit.tif
+Wed Jan 16 15:44:56 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:44:56 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/esridemw
+Wed Jan 16 15:44:56 2019|rr09h1u8p0vi86p940i5hejhei|Updating map files for watershed with outlet
+Wed Jan 16 15:44:57 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:44:57 2019|rr09h1u8p0vi86p940i5hejhei|Extracting soils for the watershed
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|Extracting landuse for the watershed
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|Converting TIF to ASC
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.asc
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.asc
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/elev.asc
+Wed Jan 16 15:45:05 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nass.asc
+Wed Jan 16 15:45:06 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soilgrid.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soil.asc
+Wed Jan 16 15:45:06 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.asc
+Wed Jan 16 15:45:06 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNetOlt.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/streamnetolt.asc
+Wed Jan 16 15:45:06 2019|rr09h1u8p0vi86p940i5hejhei|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 15:45:06 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltcalwssubvars.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 15:45:09 2019|rr09h1u8p0vi86p940i5hejhei|Copy template tmpsitefile.json to the apexrun folder
+Wed Jan 16 15:45:09 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/oltwriteapexinputs.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/gisutils/clinear
+Wed Jan 16 15:46:07 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:46:07 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:46:07 2019|rr09h1u8p0vi86p940i5hejhei|Setup Session Directory|/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei
+Wed Jan 16 15:46:11 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|<br>Saving field boundary to geojson<br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|<br>About to run:gdal_translate -projwin -87.1973706007 40.565639610243 -87.017673182487 40.40062461802 /home/gis/ned_index.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif<br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/getNEDFilesCSV /home/gis/ned_index2.csv /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindex.asc /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/nindexout.txt<br><br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|<br>/usr/bin/gdal_merge.py -o /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif -ul_lr -87.1473706007 40.515639610243 -87.067673182487 40.45062461802  /home/gis/merge/dvd9_area5.tif<br>
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|gdalwarp -t_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80' -s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' -tr 30 30 -r bilinear -dstnodata -999999 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/slice_ned.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|
+
+Wed Jan 16 15:46:28 2019|rr09h1u8p0vi86p940i5hejhei|Extracting NASS
+Wed Jan 16 15:46:29 2019|rr09h1u8p0vi86p940i5hejhei|getting stream network for the extent
+Wed Jan 16 15:46:29 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/pitremove -z /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif<br>
+Wed Jan 16 15:46:29 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/d8flowdir -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -sd8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif<br>
+Wed Jan 16 15:46:31 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/aread8 -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -nc <br>
+Wed Jan 16 15:46:31 2019|rr09h1u8p0vi86p940i5hejhei|<br>/var/www/html/v2geoapexol/gisutils/taudembin/threshold -ssa /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif-thresh16<br>
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|getting watersheds for field boundary
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|<br><br>Running TauDEM: gridnet Without outlet <br><br>
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|/var/www/html/v2geoapexol/gisutils/taudembin/gridnet -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -plen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif -tlen /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tlen.tif -gord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/gord.tif<br>
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|Running TauDEM: StreamNet without outlet
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|<br><br>/var/www/html/v2geoapexol/gisutils/taudembin/streamnet -fel /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demfel.tif -p /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/pFlowDir.tif -ad8 /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ad8ContArea.tif -src /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif -ord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/ord.tif -tree /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/tree.txt -coord /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/coord.tif -net /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/stream.shp -w /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif<br><br>
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|Convert field boundary from json to shapefile
+Wed Jan 16 15:46:32 2019|rr09h1u8p0vi86p940i5hejhei|ogr2ogr -a_srs '+proj=utm +zone=16 +datum=NAD83 +ellps=GRS80'  -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/fieldbdy.json
+Wed Jan 16 15:46:33 2019|rr09h1u8p0vi86p940i5hejhei|Finding subareas covered by the field boundary\n
+Wed Jan 16 15:46:33 2019|rr09h1u8p0vi86p940i5hejhei|Finding subareas covered by the field boundary
+Wed Jan 16 15:46:33 2019|rr09h1u8p0vi86p940i5hejhei|gdalwarp -cutline /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/fldbdy/fldbdy.shp /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwfld.tif
+Wed Jan 16 15:46:33 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwfld.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwfld.asc
+Wed Jan 16 15:46:33 2019|rr09h1u8p0vi86p940i5hejhei|python /var/www/html/v2geoapexol/gisutils/getWatershedsbyField.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw1.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw1
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw10.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw10
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw11.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw11
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw12.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw12
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw13.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw13
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw14.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw14
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw15.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw15
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw2.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw2
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw3.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw3
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:37 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw4.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw4
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw5.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw5
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw6.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw6
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw7.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw7
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw8.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw8
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/recdemw9.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/shprecdemw9
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws1.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws1.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws10.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws10.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws11.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws11.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws12.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws12.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws13.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws13.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws14.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws14.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws15.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws15.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws2.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws2.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws3.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws3.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws4.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws4.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws5.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws5.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws6.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws6.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws7.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws7.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws8.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws8.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|converting 32bit tif to 8 bit tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -ot Byte /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/wsnorecws9.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/reclademw/b8wsnorecws9.tif
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|Getting the gdalinfo of demw for conversion
+Wed Jan 16 15:46:38 2019|rr09h1u8p0vi86p940i5hejhei|gdalinfo -stats -json /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif | tee /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demwstats.json
+Wed Jan 16 15:46:39 2019|rr09h1u8p0vi86p940i5hejhei|Updating map files for watershed with field
+Wed Jan 16 15:46:45 2019|rr09h1u8p0vi86p940i5hejhei|Working Directory: '/home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei'<br>
+Wed Jan 16 15:46:45 2019|rr09h1u8p0vi86p940i5hejhei|Extracting soils for the watershed
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|Extracting landuse for the watershed
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|Processing demw to for display
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|converting tif to ESRI shapefile
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_polygonize.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif -f 'ESRI Shapefile' /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/esridemw
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|Converting TIF to ASC
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/demw.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/plen.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/utmSlice.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/gislayers/elev.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nassutmdemwext.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/landuse/nass.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soilgrid.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/soils/soil.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/sd8Slope.asc
+Wed Jan 16 15:46:51 2019|rr09h1u8p0vi86p940i5hejhei|gdal_translate -of AAIGrid /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/srcStrNet.tif /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei/taudemlayers/streamnet.asc
+Wed Jan 16 15:46:52 2019|rr09h1u8p0vi86p940i5hejhei|Copy template var1wssub.json to the apexrun folder
+Wed Jan 16 15:46:52 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldcalwssubvars.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/apexdata/table_nassmgtupn.csv /var/www/html/v2geoapexol/apexdata/table_chn.txt /var/www/html/v2geoapexol/gisutils/utm
+Wed Jan 16 15:46:57 2019|rr09h1u8p0vi86p940i5hejhei|Copy template tmpsitefile.json to the apexrun folder
+Wed Jan 16 15:46:57 2019|rr09h1u8p0vi86p940i5hejhei|/usr/bin/python3 /var/www/html/v2geoapexol/gisutils/fldwriteapexinputs.py /home/apex/usrruns_webgis/rr09h1u8p0vi86p940i5hejhei /var/www/html/v2geoapexol/gisutils/clinear

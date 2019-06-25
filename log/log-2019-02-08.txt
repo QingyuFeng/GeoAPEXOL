@@ -1,0 +1,4 @@
+Fri Feb  8 01:23:15 2019|8r8crfe426tavk0egfepje7dav|Working Directory: '/home/apex/usrruns_webgis/8r8crfe426tavk0egfepje7dav'<br>
+Fri Feb  8 01:23:15 2019|8r8crfe426tavk0egfepje7dav|Setup Session Directory|/home/apex/usrruns_webgis/8r8crfe426tavk0egfepje7dav
+Fri Feb  8 01:23:42 2019|8r8crfe426tavk0egfepje7dav|Working Directory: '/home/apex/usrruns_webgis/8r8crfe426tavk0egfepje7dav'<br>
+Fri Feb  8 01:23:42 2019|8r8crfe426tavk0egfepje7dav|Working Directory: '/home/apex/usrruns_webgis/8r8crfe426tavk0egfepje7dav'<br>

@@ -1,0 +1,1192 @@
+<?php
+
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
+
+
+
+//
+// index02olmap.php
+// 
+// This block of code was deal with all openlayer mapping stuff.
+// It will be included in the main page. The functions include:
+// 1. Initiallize the map
+// 2. Display network, subcatchment, and other in each step, depending on the
+// steps variable set.
+// 3. Deal with user interactions
+//
+// 
+
+// Start session
+//require_once('config.php');
+include('funcs.php');
+include('log.php');
+
+$taudemMap = $globWorkRoot . session_id() . "/taudem.map";
+$apexMap = $globWorkRoot . session_id() . "/apex.map";
+
+$workingDir = $globWorkRoot . session_id();
+echo('<br> Session ID: '.session_id(). '<br>');
+//Set working directory
+$genefuncs->setWorkingDir();
+
+// Determine units 
+if ($globEngUnits == 1) {
+    $lenStr = "ft";
+    $areaStr = "acre";
+}
+else
+{
+    $lenStr = "m";
+    $areaStr = "ha";
+}
+
+// This page offers several functions:
+// 1. Zoom to user specified location 
+// 2. Simulate a watershed by starting generation of stream net 
+// 3. Then, user specify a watershed oulet. 
+// 4. Then, delineate a watershed from the outlet
+// 5. Or simulate a watershed by starting drawing a field boundary.
+// 6. Then get a watershed outlet
+// 7. At last, setup models and get the results. 
+// All action was ordered by pressing the button, submit corresponding
+// button, send commond through url, get commond and run block of code.
+//
+// There are several things to take care of at each step:
+// 1. session variables: 
+//  mainly controlling the progress and the map stuff
+// 2. display of buttons and tables.
+if (!isset($_REQUEST['IACT']))
+{$iact=null;}
+else{$iact = $_GET["IACT"];}
+
+if (!is_null($iact))
+{   
+
+    if (strcmp($iact, "dostartover") == 0)
+    {
+        // Start over will restore everything back to
+        // default value. The easist way is to reset the
+        // session variable and working dir. 
+        // Let's try
+        $_SESSION["SSVAR"] = json_decode(file_get_contents(JS_SSVARJSON), true);
+        $genefuncs->delete_files($workingDir);
+        $genefuncs->setWorkingDir();
+    }
+
+
+    if (strcmp($iact, "dozoomtoloc") == 0)
+    {
+        // Set session variables    
+        $_SESSION["SSVAR"]["izoom"] = 1;
+
+        if (isset($_REQUEST['ZLOC']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["zoomLoc"] = $_REQUEST["ZLOC"];
+        }
+
+        if (isset($_REQUEST['CTAR']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["criticalarea"] = $_REQUEST["CTAR"];
+        }
+        //echo('tiled: '.$_SESSION["SSVAR"]["tiledep"]);
+        if (isset($_REQUEST['TILD']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["tiledep"] = $_REQUEST["TILD"];
+        }
+        $zoomLocation = trim($_SESSION["SSVAR"]["zoomLoc"]);
+        $len = strlen($zoomLocation);
+                        
+        if ($len > 0) {
+            $arr = $genefuncs->doZoom($zoomLocation,$_SESSION["SSVAR"]["latitude"],$_SESSION["SSVAR"]["longitude"]);
+            $_SESSION["SSVAR"]["latitude"] = $arr[0];
+            $_SESSION["SSVAR"]["longitude"] = $arr[1];
+
+            $yll = $_SESSION["SSVAR"]["latitude"] - 0.1;
+            $xll = $_SESSION["SSVAR"]["longitude"] - 0.1;
+            $yur = $_SESSION["SSVAR"]["latitude"] + 0.1;
+            $xur = $_SESSION["SSVAR"]["longitude"] + 0.1;
+            $_SESSION["SSVAR"]["extent"] = $xll . "," . $yll . "," . $xur . "," . $yur;
+        }   
+    }   
+    elseif (strcmp($iact, "dostreamnet") == 0)
+    {
+        // If do stream net is pushed
+        //case "dostreamnet":
+        // 1. extract the dem
+        // 2. Run taudem to generate stream net work,
+        // 3. Update map works.
+        // 4. Update passstep variable
+        if (isset($_REQUEST['EXT']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["extent"] = $_REQUEST["EXT"];
+        }   
+
+        // Update critical area 
+        if (isset($_REQUEST['CTAR']))
+        {
+            $_SESSION["SSVAR"]["criticalarea"] = $_REQUEST['CTAR'];
+        }
+
+        if (isset($_REQUEST['TILD']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["tiledep"] = $_REQUEST["TILD"];
+        }
+
+        // Call an additional php file
+        include("dosnolt.php"); 
+    
+        // Update steps value for map showing
+        // Each time this option is run, the stream network will 
+        // be generated. And the following steps should all be disabled.
+        // So, the step value will be set.
+        $_SESSION["SSVAR"]["oltstep"] = 1;
+    }   
+    elseif (strcmp($iact, "dowsolt") == 0)
+    {
+        // Update steps value for map showing
+        // Each time this option is run, the stream network will
+        // be generated. And the following steps should all be disabled.
+        // So, the step value will be set.
+
+        // Get the JSON for the watershed outlet
+        if (isset($_REQUEST['JSOLT']))
+        {
+            // update extent for map display
+            $jsonutmolt = $_REQUEST['JSOLT'];
+        }
+
+        // Update critical area
+        if (isset($_REQUEST['CTAR']))
+        {
+            $_SESSION["SSVAR"]["criticalarea"] = $_REQUEST['CTAR'];
+        }
+
+        if (isset($_REQUEST['TILD']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["tiledep"] = $_REQUEST["TILD"];
+        }
+
+        // Call an additional php file
+        include("dowsolt.php");
+    
+        $_SESSION["SSVAR"]["oltstep"] = 2;
+    }
+    elseif (strcmp($iact, "dowsfld") == 0)
+    {
+        // Update step values
+        // Update steps value for map showing
+        // Each time this option is run, the stream network will
+        // be generated. And the following steps should all be disabled.
+        // So, the step value will be set.
+        // Get the JSON for the watershed outlet
+        if (isset($_REQUEST['JSFLD']))
+        {
+            $jsonutmfld = $_REQUEST['JSFLD'];
+        }
+        if (isset($_REQUEST['EXT']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["extent"] = $_REQUEST["EXT"];
+        }
+        // Update critical area
+        if (isset($_REQUEST['CTAR']))
+        {
+            $_SESSION["SSVAR"]["criticalarea"] = $_REQUEST['CTAR'];
+        }
+
+        if (isset($_REQUEST['TILD']))
+        {
+            // update extent for map display
+            $_SESSION["SSVAR"]["tiledep"] = $_REQUEST["TILD"];
+        }
+        echo('tiled: '.$_SESSION["SSVAR"]["tiledep"]);
+
+        $_SESSION["SSVAR"]["fldstep"] = 1;
+        // Call an additional php file
+        include('dowsfld.php');
+        
+    }
+
+    elseif (strcmp($iact, 'dosetapexolt') == 0)
+    {
+        // Setting APEX model for the watershed outlet
+        // Till now, we get geographic information
+        // for setting up the model. The next step
+        // will include: 
+        // 1) copy all base data to the run folder
+        // 2) create site, sub, sol, climate,... files
+        // 3) run apex
+        // 4) generate output in table, map, and graph
+        // formats.
+        include('dosetapexolt.php');
+
+        $_SESSION["SSVAR"]["oltstep"] = 3;
+    }
+
+    elseif (strcmp($iact, 'dosetapexfld') == 0)
+    {
+        // Setting APEX model for the watershed outlet
+        // Till now, we get geographic information
+        // for setting up the model. The next step
+        // will include:
+        // 1) copy all base data to the run folder
+        // 2) create site, sub, sol, climate,... files
+        // 3) run apex
+        // 4) generate output in table, map, and graph
+        // formats.
+        $_SESSION["SSVAR"]["fldstep"] = 2;
+        include('dosetapexfld.php');
+
+
+    }
+
+    elseif (strcmp($iact, 'runapexfld') == 0)
+    {
+        include('runapexfld.php');
+        $_SESSION["SSVAR"]["fldstep"] = 3; 
+    }
+
+    elseif (strcmp($iact, 'runapexolt') == 0)
+    {
+        include('runapexolt.php');
+        $_SESSION["SSVAR"]["oltstep"] = 4;
+    }
+
+
+
+    // uncomment this to stop refresh after finishing all the
+    // codes.
+    //header("Location: index.php");
+
+}       
+
+?>
+
+
+<script language="JavaScript" src="javascripts/popups.js"></script>
+
+<script type="text/javascript">
+// variables
+var map;
+var recenter = 1;
+const mapserv = '<?=$mapserv?>';
+
+var srcDrawFld = new ol.source.Vector();
+var vecDrawFld = new ol.layer.Vector({
+    source: srcDrawFld
+});
+
+var srcDrawOlt = new ol.source.Vector();
+var vecDrawOlt = new ol.layer.Vector({
+    source: srcDrawOlt
+});
+
+
+
+
+function doSearch()
+{
+    // First get the user entered location for searching
+    var usrloc = document.mapserv.ZLOC.value;
+    loc = "index.php?IACT=dozoomtoloc";
+    loc = loc + "&ZLOC=" + escape(usrloc);
+
+    var crit = document.mapserv.CRIT.value;
+    loc = loc + "&CTAR=" + escape(crit);
+
+    var usrtd = document.mapserv.TILED.value;  
+    if(usrtd.length != 0){
+    loc = loc + "&TILD=" + escape(usrtd);}
+    parent.location = loc;
+}
+
+function doStartOver()
+{
+        // Restore everything to default
+        loc = "index.php?IACT=dostartover";
+        parent.location = loc;
+}
+
+
+
+function doTauDEMStreamNet()
+{
+    // 1. Check whether a stream network has already been 
+    // generated
+    var istrmgene = '<?=$_SESSION["SSVAR"]["oltstep"]?>';
+    if (istrmgene > 0) {
+        if (confirm("Delete current channel network and create a new one?"));
+        else
+        {return};
+    }   
+
+    // 2. Judge whether the area is too large for processing.   
+    var src  = map.getView().getProjection().getCode();
+    var t = map.getView().calculateExtent(); 
+    
+    var nt = ol.proj.transformExtent(t,src,"EPSG:4326");
+    var wid = ol.extent.getWidth(nt);
+    var hgt = ol.extent.getHeight(nt);
+    var bx = nt;
+    var zoom = map.getView().getZoom();
+
+    if ((wid > 0.30) || (hgt > 0.30)) {
+        areaTooLarge(wid,hgt);
+    }
+    else
+    {
+        // Judge the critical area for watershed delineation
+        var crit = document.mapserv.CRIT.value;
+        if (crit < 0) {
+              generalPopup('Critical source area must be greater than 0.');
+              return;
+        }
+        else
+        {   
+            // If everything is good, redirect page.
+            loc = "index.php?IACT=dostreamnet";
+            loc = loc + "&EXT=" + escape(bx); 
+            loc = loc + "&CTAR=" + escape(crit);
+            var usrtd = document.mapserv.TILED.value;
+            if(usrtd.length != 0){
+            loc = loc + "&TILD=" + escape(usrtd);}
+            parent.location = loc;
+
+        }
+    }
+}
+
+
+function areaTooLarge(wid,hgt) 
+{
+    var hstr  = "<table border=\"1\" width=\"100%\"><tr>";
+    hstr = hstr + "<td height=\"120px\" width=\"250px\" bgcolor=\"#CCFFFF\">";
+    hstr = hstr + "<font face=\"Arial\">";
+    hstr = hstr + "Area is too large to delineate.<br>Zoom into a smaller area less than 0.20 degrees by 0.20 degrees.<br>The current area is " + wid.toFixed(2) + " degrees by " + hgt.toFixed(2) + " degrees.";
+    hstr = hstr + "</font>";
+    hstr = hstr + "</td></tr></table>";
+
+    var popup = new Popup();
+    map.addOverlay(popup);
+
+    popup.show(map.getView().getCenter(), hstr);
+}
+
+
+//
+// enableDrawOutlet(pass)
+//
+// The function to enable a draw an outlet function
+// This was called when the user clicked the Set Outlet button
+// on the main page.
+
+function enableDrawOutlet()
+{
+    var oltstep = '<?=$_SESSION["SSVAR"]["oltstep"]?>'; 
+    if (oltstep > 1) {
+            if (confirm("Delete current outlet point and select a new one?"));
+            else {return;}
+    }
+
+        map.addLayer(vecDrawOlt);
+        var drawol = new ol.interaction.Draw({
+            source: srcDrawOlt,
+            type: "Point"
+        });
+
+        map.addInteraction(drawol);
+
+        drawol.on('drawend', function(evt){
+        srcDrawOlt.clear();
+        document.mapserv.wsoltButton.disabled = false;
+            },
+        this);
+}
+
+
+
+
+function doTauDEMWatershedOlt()
+{
+    var oltstep = '<?=$_SESSION["SSVAR"]["oltstep"]?>';
+    if (oltstep >= 2) {
+        if (confirm("Delete current watershed and build a new one?"));
+        else {return;}
+    }
+    var utmzone = '<?=$_SESSION["SSVAR"]['utmzone']?>';
+    
+    fetch('https://epsg.io/?format=json&q=269' + utmzone).then(
+        function(response) {return response.json();
+        }).then(function(json) {
+            var results = json['results'];
+            if (results && results.length > 0) {
+                for (var i = 0, ii = results.length; i < ii; i++) {
+                    var result = results[i];
+                    if (result) {
+                    var code = result['code'];
+                    var name = result['name'];
+                    var proj4def = result['proj4'];
+                    var bbox = result['bbox'];
+
+                    if (code && code.length > 0 && proj4def && proj4def.length > 0 &&
+                        bbox && bbox.length === 4) {
+                        gotoSubcatchmentOlt(code, proj4def);
+                        return;
+                        }
+                    }
+                }
+            }
+});
+
+}
+
+
+
+
+function gotoSubcatchmentOlt(code, proj4def){
+    
+    var newProjCode = 'EPSG:' + code;
+    proj4.defs(newProjCode, proj4def);
+    // Define the GeoJson format, which will be used to write the features.
+    var format = new ol.format.GeoJSON();
+    var features = srcDrawOlt.getFeatures();
+    var jsonutm = format.writeFeatures(features,{dataProjection: newProjCode,
+                                          featureProjection: 'EPSG:3857'});
+
+    loc = "index.php?IACT=dowsolt";
+    loc = loc + "&JSOLT=" + escape(jsonutm);
+
+    var crit = document.mapserv.CRIT.value;
+    loc = loc + "&CTAR=" + escape(crit);
+
+    var usrtd = document.mapserv.TILED.value;
+    if(usrtd.length != 0){
+    loc = loc + "&TILD=" + escape(usrtd);}
+
+    
+    parent.location = loc;  
+}
+
+
+
+function setupAPEXOlt(){
+    loc = "index.php?IACT=dosetapexolt";
+        parent.location = loc;
+}
+
+
+function setupAPEXFld(){
+    loc = "index.php?IACT=dosetapexfld";
+    parent.location = loc;
+}
+
+function runAPEXOlt(){
+    loc = "index.php?IACT=runapexolt";
+        parent.location = loc;
+}
+
+
+function runAPEXFld(){
+    loc = "index.php?IACT=runapexfld";
+    parent.location = loc;
+}
+
+//
+// enableDrawFieldBdy()
+//
+// The function to enable a draw field boundary option
+// This was called when the user clicked the Draw Field Boundary button
+// on the main page.
+function enableDrawBoundary()
+{
+    var fldstep = '<?=$_SESSION["SSVAR"]["fldstep"]?>';
+    if (fldstep > 0) {
+        if (confirm("Delete current field boundary and select a new one?"));
+        else {return;}
+    }
+
+    map.addLayer(vecDrawFld);
+    // Add snapping
+    map.addInteraction(new ol.interaction.Snap({
+        source: srcDrawFld
+    }));
+
+    var draw = new ol.interaction.Draw({
+        source: srcDrawFld,
+        type: "Polygon",
+        style: new ol.style.Style({
+        fill: new ol.style.Fill({
+        color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.5)',
+            lineDash: [10, 10],
+            width: 2
+            }),
+            image: new ol.style.Circle({
+            radius: 5,
+            stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.7)'
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.2)'
+            })
+          })
+        })
+        });
+    map.addInteraction(draw);
+
+    // Block of code dealing with area measurement
+    createHelpTooltip();
+
+    var listener;
+    var sketch;
+    draw.on('drawstart', function(evt){
+        srcDrawFld.clear();
+        createMeasureTooltip();
+        sketch = evt.feature;
+        var tooltipCoord = evt.coordinate;
+        listener = sketch.getGeometry().on('change', function(evt) {
+            var geom = evt.target;
+            var output;
+            output = formatArea(geom);
+            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+            measureTooltipElement.innerHTML = output;
+            measureTooltip.setPosition(tooltipCoord);
+            });
+    }, this);
+
+
+    draw.on('drawend', function(evt){
+        srcDrawFld.clear();
+        measureTooltipElement.className = 'tooltip tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        // unset sketch
+        sketch = null;
+        // unset tooltip so that a new one can be created
+        measureTooltipElement = null;
+        ol.Observable.unByKey(listener);
+        document.mapserv.wsfldbButton.disabled = false;
+        document.mapserv.strnetButton.disabled = true;
+    }, this);
+    
+    var modifysrcDrawFld = new ol.interaction.Modify({
+                source: srcDrawFld
+        });
+
+    map.addInteraction(modifysrcDrawFld);
+    
+    modifysrcDrawFld.on('modifyend', function(evt){
+        createMeasureTooltip();
+        evt.features.forEach(function(feature){
+            var coords = feature.getGeometry().getCoordinates();
+            var geom = feature.getGeometry();
+            var output = formatArea(geom);
+            var tooltipCoord = geom.getInteriorPoint().getCoordinates();
+            measureTooltipElement.innerHTML = output;
+            measureTooltip.setPosition(tooltipCoord);
+            measureTooltipElement.className = 'tooltip tooltip-static';
+            measureTooltip.setOffset([0, -7]);
+            // unset tooltip so that a new one can be created
+            measureTooltipElement = null;
+        });
+    }, this);
+
+    map.on('pointermove', function(evt){
+        // When user was dragging map, then coordinates didn't change and there's
+        // no need to continue
+        if (evt.dragging) {
+            return;
+        }
+        // You can access coordinates from evt.coordinate now   
+        /** @type {string} */
+        var helpMsg = 'Click to start drawing';
+        
+        if(sketch){
+            helpMsg = 'Click to continue drawing the polygon';
+        }   
+        helpTooltipElement.innerHTML = helpMsg;
+        helpTooltip.setPosition(evt.coordinate);
+        helpTooltipElement.classList.remove('hidden');
+
+    });
+    map.getViewport().addEventListener('mouseout', function() {
+            helpTooltipElement.classList.add('hidden');
+        });
+
+      /**
+       * Creates a new measure tooltip
+       */
+    
+    /**
+        * The measure tooltip element.
+        * @type {Element}
+        */
+    var measureTooltipElement;  
+    var helpTooltipElement;
+
+        /**
+        * Overlay to show the help messages.
+        * @type {ol.Overlay}
+        */
+        var helpTooltip;
+        /**
+        * Overlay to show the measurement.
+        * @type {ol.Overlay}
+        */
+        var measureTooltip = null;
+
+    function createMeasureTooltip() {
+            if (measureTooltipElement) {
+                measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+            }
+            measureTooltipElement = document.createElement('div');
+            measureTooltipElement.className = 'tooltip tooltip-measure';
+        if (measureTooltip !== null) {
+            map.removeOverlay(measureTooltip);
+        }   
+
+        measureTooltip = new ol.Overlay({
+                element: measureTooltipElement,
+                offset: [0, -15],
+                positioning: 'bottom-center'
+            });
+            map.addOverlay(measureTooltip);
+        }
+
+      /**
+       * Creates a new help tooltip
+       */
+        function createHelpTooltip() {
+            if (helpTooltipElement) {
+                helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+            }
+            helpTooltipElement = document.createElement('div');
+            helpTooltipElement.className = 'tooltip hidden';
+            helpTooltip = new ol.Overlay({
+                element: helpTooltipElement,
+                offset: [15, 0],
+            positioning: 'center-left'
+            });
+            map.addOverlay(helpTooltip);
+      }
+
+
+      /**
+       * Format area output.
+       * @param {ol.geom.Polygon} polygon The polygon.
+       * @return {string} Formatted area.
+       */
+    var wgs84Sphere = new ol.Sphere(6378137); 
+    var formatArea = function(polygon) {
+            var area;
+            var sourceProj = map.getView().getProjection();
+            var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(
+                    sourceProj, 'EPSG:4326'));
+            var coordinates = geom.getLinearRing(0).getCoordinates();
+            area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+            var output;
+            if (area > 10000) {
+                output = (Math.round(area / 1000000 * 100) / 100) +
+                    ' ' + 'km<sup>2</sup>';
+            } else {
+                output = (Math.round(area * 100) / 100) +
+                    ' ' + 'm<sup>2</sup>';
+            }
+            return output;
+      };
+
+
+
+
+}
+
+
+
+function doTauDEMWatershedFldB()
+{
+    var fldstep = '<?=$_SESSION["SSVAR"]["fldstep"]?>';
+    if (fldstep >= 1) {
+            if (confirm("Delete current watershed and build a new one?"));
+            else {return;}
+    }
+    
+    var src  = map.getView().getProjection().getCode();
+    var mapext = map.getView().calculateExtent();
+    var mapext4326 = ol.proj.transformExtent(mapext,src,"EPSG:4326");   
+    var utmzone = Math.floor((((mapext4326[0] + mapext4326[2])/2.0)/6) + 31);
+
+    //var utmzone = '<?=$_SESSION["SSVAR"]['utmzone']?>';
+    
+    fetch('https://epsg.io/?format=json&q=269' + utmzone).then(
+            function(response) {return response.json();
+            }).then(function(json) {
+                var results = json['results'];
+                if (results && results.length > 0) {
+                    for (var i = 0, ii = results.length; i < ii; i++) {
+                        var result = results[i];
+                            if (result) {
+                    var code = result['code'];
+                                var name = result['name'];
+                                var proj4def = result['proj4'];
+                                var bbox = result['bbox'];
+                                if (code && code.length > 0 && proj4def && proj4def.length > 0 &&
+                                bbox && bbox.length === 4) {
+                                       gotoTauDEMWSFld(code, proj4def);
+                                        return;
+                        }
+                    }
+                }
+            }
+});
+
+}
+
+function gotoTauDEMWSFld(code, proj4def){
+    
+    var newProjCode = 'EPSG:' + code;
+        proj4.defs(newProjCode, proj4def);
+    // Define the GeoJson format, which will be used to write the features.
+    const format = new ol.format.GeoJSON()
+    const features = srcDrawFld.getFeatures();
+    const jsonutm = format.writeFeatures(features,{dataProjection: newProjCode,
+                                          featureProjection: 'EPSG:3857'});
+    
+    // Besides taking care of the field boundary, others need also to be 
+    // calculated. These include:
+    // 1. update extent based on field boundary. This needs 
+    // to be done to make sure the watershed delineated are 
+    // large enough to cover the whole field drawn by the user.
+    // This is was done by include certain buffers around the 
+    // extent of the field boundary. Update the extent with 
+    // buffers and clip dem with the updated extent.
+    var src  = map.getView().getProjection().getCode();
+//  var mapext = map.getView().calculateExtent();
+    // Get the extent of the user drawn field boundary
+    var fldext = srcDrawFld.getExtent();    
+    // Convert the extent from EPSG:3857 default to dem projection 4326
+    var fldext4326 = ol.proj.transformExtent(fldext,src,"EPSG:4326");   
+    // Judge the area, it can not be too large
+    var boxwidth = ol.extent.getWidth(fldext4326);
+        var boxheight = ol.extent.getHeight(fldext4326);
+        var box = fldext4326;
+
+    var boxwidth025 = boxwidth + 0.025;
+    var boxheight025 = boxheight + 0.025;
+    //alert('height: ' + boxheight + 'height025' + boxheight025);   
+    if ((boxwidth025 > 0.30) || (boxheight025 > 0.30)) {
+        areaTooLarge(wid,hgt);
+    }
+    else
+    {
+        // Judge the critical area for watershed delineation
+        var crit = document.mapserv.CRIT.value;
+        if (crit < 0) {
+                  generalPopup('Critical source area must be greater than 0.');
+              return;
+        }
+        else
+        {   
+            // If everything is good, redirect page.    
+            loc = "index.php?IACT=dowsfld";
+            loc = loc + "&JSFLD=" + escape(jsonutm);
+            // If everything is good, redirect page.
+            loc = loc + "&EXT=" + escape(fldext4326); 
+            loc = loc + "&CTAR=" + escape(crit);
+            loc = loc + "&PRJ=" + escape(proj4def);
+            var usrtd = document.mapserv.TILED.value;
+            if(usrtd.length != 0){
+            loc = loc + "&TILD=" + escape(usrtd);}
+
+            parent.location = loc;
+
+        }   
+    
+    }
+    //alert(fldext4326 + ', height ' + boxheight + ', width ' + boxwidth  );
+}
+
+
+
+
+function setupAPEXFld(){
+        loc = "index.php?IACT=dosetapexfld";
+        parent.location = loc;
+}
+
+
+
+//
+// initol()
+//
+// This is the main initialization for the maps when the page loads.
+//
+ function initol()
+ {
+    var extent = [-14225848,2815858,-7386874,6339992];
+    var mapOptions = {
+        view: new ol.View({
+        center: ol.proj.fromLonLat([-96.3,40.3]),
+        extent: extent, 
+        zoom: 4,
+        minZoom: 4
+        }),
+        target: 'map'
+        };
+     
+    map = new ol.Map(mapOptions); 
+        var layerSwitcher = new ol.control.LayerSwitcher({
+             tipLabel: 'Legend' // Optional label for button
+        });
+        map.addControl(layerSwitcher);      
+    
+    setBaseLayersOpen();
+    
+    //setOverlaysOpen(); 
+
+    // Setup  layers of each step
+    <?php if ($_SESSION["SSVAR"]["oltstep"] > 0) { ?>
+        setOltStep1Layers();       // Channel delineation complete, network layer available
+    <?php } ?>
+
+        <?php if ($_SESSION["SSVAR"]["oltstep"] > 1) { ?>
+                setOltStep2Layers();       // Channel delineation complete, network layer available
+        <?php } ?>
+
+        <?php if ($_SESSION["SSVAR"]["fldstep"] > 0) { ?>
+        var wsnoinfld = '<?=$_SESSION["SSVAR"]["fldwsno"]?>';
+        setFldStep1Layers(wsnoinfld);       // Channel delineation complete, network layer available
+        <?php } ?>
+
+
+
+
+
+
+
+    <?php if (( $_SESSION["SSVAR"]["extent"]== 0) && ($_SESSION["SSVAR"]["izoom"]== 0)) { ?>
+                map.zoomToMaxExtent();
+        <?php } else { ?>
+                //alert("extent:" + "<?=$_SESSION["SSVAR"]["extent"]?>");
+                var extent = "<?=$_SESSION["SSVAR"]["extent"]?>";
+                var exts = extent.split(',');
+                //alert(exts[0]);alert(exts[1]);alert(exts[2]);alert(exts[3]);
+                exts[0] = parseFloat(exts[0]);
+                exts[1] = parseFloat(exts[1]);
+                exts[2] = parseFloat(exts[2]);
+                exts[3] = parseFloat(exts[3]);
+
+                var coordMin = ol.proj.fromLonLat([exts[0],exts[1]], 'EPSG:3857');
+                //alert(coordMin);
+                var coordMax = ol.proj.fromLonLat([exts[2],exts[3]], 'EPSG:3857');
+                var extent = [coordMin[0],coordMin[1],coordMax[0],coordMax[1]];
+                //alert("newextent:" + extent);
+                map.getView().fit(extent , map.getSize());
+                //bounds = new OpenLayers.Bounds(<?=$extent?>);
+                //bounds.transform(new OpenLayers.Projection("EPSG:4326"),
+                 //                          map.getProjectionObject());
+               // map.zoomToExtent(bounds,true);
+            <?php } ?>
+
+
+
+}    
+
+
+//
+// setBaseLayersOpen()
+//
+// This sets up the base layers when the geographic projection is used (epsg:4326). Mostly we use the
+// Google Maps base layers and this is only here for testing another approach.
+//
+function setBaseLayersOpen()
+{
+    var map_lay = new ol.layer.Tile({
+        title: 'Topo',
+        type: 'base',
+        source: new ol.source.XYZ({
+        attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+        url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
+                'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+        })
+    });
+    var sat_lay = new ol.layer.Tile({
+        title: 'Satellite',
+        type: 'base',
+        source: new ol.source.XYZ({
+            attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Imagery/MapServer">ArcGIS</a>',
+            url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        })
+    });
+
+    var street_lay = new ol.layer.Tile({
+        title: 'Streets',
+        type: 'base',
+        source: new ol.source.XYZ({
+            attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Street_Map/MapServer">ArcGIS</a>',
+            url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
+        })
+    });
+
+    map.addLayer(street_lay);
+    map.addLayer(sat_lay);
+    map.addLayer(map_lay);
+   // map.addLayer(sat_lay);
+}
+
+
+//
+// setOverlaysOpen()
+//
+// As an alternative to the Google Maps the interface can use a set of maps in the geographic projection (unprojection lat/long epsg:4326)
+// This sets the various layers that can be used for that.
+//
+function setOverlaysOpen()
+{
+    var ppt_lay = new ol.layer.Image({
+        title: 'Annual Preciptation',
+        source: new ol.source.ImageWMS({
+        url:mapserv,
+        crossOrigin: 'anonymous',
+            attributions: 'NOAA',
+            params : {
+              'LAYERS': 'PPT',
+              'map' : '<?=$globStaticMap?>',
+             },
+            serverType: 'mapserver'
+        })
+    });
+
+    map.addLayer(ppt_lay);
+    ppt_lay.set('visible', false);
+
+    var nlcd_lay = new ol.layer.Image({
+        title: 'USGS NLCD Landuse (2001)',
+        source: new ol.source.ImageWMS({
+            attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">USGS</a>',
+        url:mapserv,
+        params : {
+                'LAYERS': 'Landuse',
+                'map' : '<?=$globStaticMap?>',
+            },
+            ServerType: 'mapserver'
+        })
+    });
+
+    map.addLayer(nlcd_lay);
+    nlcd_lay.set('visible', false);
+
+    var nlcd2006_lay = new ol.layer.Image({
+        title: 'USGS NLCD Landuse (2006)',
+        source: new ol.source.ImageWMS({
+                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">USGS</a>',
+                    
+        url:mapserv,            
+        params : {
+               'LAYERS': 'Landuse2006',
+                'map' : '<?=$globStaticMap?>',
+             },
+        ServerType: 'mapserver'
+        })
+    });
+
+    map.addLayer(nlcd2006_lay);
+    nlcd2006_lay.set('visible', false);
+
+    var nlcdimp_lay = new ol.layer.Image({
+        title: 'USGS Impervious (2001)',
+        source: new ol.source.ImageWMS({
+            attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">USGS</a>',
+        url:mapserv,
+        params : {
+               'LAYERS': 'Impervious',
+                'map' : '<?=$globStaticMap?>',
+            },
+            ServerType: 'mapserver'
+        })
+    });
+
+    map.addLayer(nlcdimp_lay);
+    nlcdimp_lay.set('visible', false);
+
+}
+
+
+ //
+ // setPass1Layers()
+ //
+ // This function is called after the channel delineation has been run. The channel network layer
+ // is added. The outlet button is enabled to allow selecting an outlet on the channel network.
+ //
+function setOltStep1Layers()
+{
+    var network_lay = new ol.layer.Image({
+                  title: 'Network',
+                  source: new ol.source.ImageWMS({ 
+          url:mapserv,
+          crossOrigin: 'anonymous',
+                  attributions: 'USDA-ARS TOPAZ',
+                  params : {
+                      'LAYERS': 'network',
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+        })
+    });
+
+    map.addLayer(network_lay);
+
+}
+
+ //
+ // setOltStep1Layers()
+ //
+ // This function is called after the subcatchments have been delineated. The new subcatchment
+ // layer is added. At this point all buttons are enabled.
+ //
+function setOltStep2Layers()
+{
+        var sub_lay = new ol.layer.Image({
+                  title: 'watershed',
+                  source: new ol.source.ImageWMS({
+                  url:mapserv,
+                  crossOrigin: 'anonymous',
+                  attributions: 'USDA-ARS TOPAZ',
+                  params : {
+                      'LAYERS': 'watershed',
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                })
+        });
+
+        map.addLayer(sub_lay);
+
+    var subid_lay  = new ol.layer.Image({
+                title: 'Subarea IDs',
+                source: new ol.source.ImageWMS({
+        url:mapserv,
+        crossOrigin: 'anonymous',
+                    attributions: 'USDA-ARS TOPAZ',
+                    params : {
+                      'LAYERS': 'SubareaIDs',
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                 })
+                });
+
+             map.addLayer(subid_lay);
+
+}
+
+
+ //
+ // setPass1Layers()
+ //
+ // This function is called after the channel delineation has been run. The channel network layer
+ // is added. The outlet button is enabled to allow selecting an outlet on the channel network.
+ //
+function setFldStep1Layers(wsnoinfld)
+{
+        var network_lay = new ol.layer.Image({
+                  title: 'Network',
+                  source: new ol.source.ImageWMS({
+                  url:mapserv,
+                  crossOrigin: 'anonymous',
+                  attributions: 'USDA-ARS TOPAZ',
+                  params : {
+                      'LAYERS': 'network',
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                })
+        });
+        map.addLayer(network_lay);
+
+    // Adding watershed boundaries
+    for (iws = 1; iws <= wsnoinfld; iws++) {
+        var ws_lay = new ol.layer.Image({
+                  title: 'Watershed' + iws.toString(),
+                  source: new ol.source.ImageWMS({
+                  url:mapserv,
+                  crossOrigin: 'anonymous',
+                  attributions: 'USDA-ARS TOPAZ',
+                  params : {
+                      'LAYERS': 'watershed' + iws.toString(),
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                })
+            });
+            map.addLayer(ws_lay);
+
+                var subid_lay = new ol.layer.Image({
+                  title: 'Subarea ID for Watershed' + iws.toString(),
+                  source: new ol.source.ImageWMS({
+                  url:mapserv,
+                  crossOrigin: 'anonymous',
+                  attributions: 'USDA-ARS TOPAZ',
+                  params : {
+                      'LAYERS': 'subareaid' + iws.toString(),
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                })
+               });
+                map.addLayer(subid_lay);
+    }
+
+
+        var fld_lay  = new ol.layer.Image({
+                title: 'Field Boundary',
+                source: new ol.source.ImageWMS({
+                url:mapserv,
+                crossOrigin: 'anonymous',
+                    attributions: 'USDA-ARS TOPAZ',
+                    params : {
+                      'LAYERS': 'FldBdy',
+                      'map' : '<?=$taudemMap?>',
+                     },
+                  serverType: 'mapserver'
+                 })
+                });
+
+       map.addLayer(fld_lay);
+
+
+
+
+
+
+}
+
+
+
+
+
+function helpCSA()
+{
+   generalPopup('Critical Source Area (CSA) is the smallest area that can start the generation of a channel.<br>Larger values will give a sparser channel network.');
+}
+</script>
+
+
+
+
+

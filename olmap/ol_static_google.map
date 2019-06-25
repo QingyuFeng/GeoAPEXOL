@@ -1,0 +1,528 @@
+MAP
+#
+# // Start of map file
+#
+# This is the main map file for WEPP that contains layers that are always available. The layers
+# are maintained in various projections. The main map file is set to the Google Spherical Mercator
+# projection (900913). Requests from OpenLayers should use 900913 as the projection this allows this mapserver
+# to get the data from a source and reproject if necessary before returning. This approach is needed
+# because not all layers support a native 900913 (or equivalent) projection. It does require that some data
+# make an extra stop (WMS Server->Local Mapserver->Browser Client) instead of going directory from the the WMS
+# server to the browser.
+#
+# Jim Frankenberger
+# September 2010
+#
+NAME IN 
+STATUS ON
+SIZE 600 600 
+EXTENT -14225848 2815858 -7386874 6339992 
+DEBUG 5
+
+CONFIG "MS_ERRORFILE" "/var/www/html/tmp/ms_error.txt"
+
+UNITS METERS 
+IMAGECOLOR 255 255 255 
+
+# // you may need to change this to match your MapServer build
+IMAGETYPE png24 
+IMAGEQUALITY 100
+
+# Select first for NSERL paths, second for WSU paths
+SHAPEPATH "/home/gis"
+
+#
+# // Projection definition, consult the PROJ.4 documentation for parameter discussion
+#
+PROJECTION
+  "init=epsg:3857"
+END
+WEB
+  
+  IMAGEPATH "/var/www/html/tmp/"
+
+  IMAGEURL "/tmp/"
+
+  METADATA
+    "wms_title" "WEPP"
+    "wms_enable_request" "*"
+    "wms_format" "image/png"
+    wms_srs "EPSG:3857"
+  END
+END
+
+QUERYMAP
+  SIZE 200 200
+  STATUS ON
+  STYLE HILITE
+  COLOR 255 0 0
+END
+
+SYMBOL
+  NAME 'circle'
+  TYPE ellipse
+  FILLED true
+  POINTS
+    1 1
+  END
+END
+
+SYMBOL
+  NAME 'pin'
+  TYPE pixmap
+  IMAGE '/var/www/html/images/pin.png'
+END 
+
+
+#
+# // Start of legend
+#
+LEGEND
+  IMAGECOLOR 255 255 255 
+  KEYSIZE 15 10
+  LABEL
+    TYPE BITMAP
+    SIZE SMALL 
+    COLOR 0 0 0 
+  END
+  STATUS ON
+END
+
+OUTPUTFORMAT
+  NAME png
+  DRIVER "AGG/PNG"
+  MIMETYPE "image/png"
+  IMAGEMODE RGB 
+  EXTENSION "png"
+  FORMATOPTION "INTERLACE=ON"
+END
+
+LAYER
+# USGS 2001 landuse
+   NAME Landuse
+   METADATA
+      "wms_title" "USGS Landcover(2001)"
+      "wms_crs"   "EPSG:3857" 
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "15"
+   END
+   STATUS OFF
+   TYPE RASTER
+   TRANSPARENCY 80
+   CONNECTIONTYPE WMS
+   CONNECTION "https://www.mrlc.gov/arcgis/services/LandCover/USGS_EROS_LandCover_NLCD/MapServer/WmsServer?"
+   CLASSITEM "[pixel]"
+
+   PROJECTION
+    "init=epsg:3857" #geographic
+   END
+END
+
+LAYER
+# USGS 2006 landuse
+   NAME Landuse2006
+   METADATA
+      "wms_title" "USGS Landcover(2006)"
+      "wms_srs"   "EPSG:3857" 
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "24"
+   END
+   STATUS OFF
+   TYPE RASTER
+   TRANSPARENCY 80
+   CONNECTIONTYPE WMS
+   CONNECTION "https://www.mrlc.gov/arcgis/services/LandCover/USGS_EROS_LandCover_NLCD/MapServer/WmsServer?" 
+   CLASSITEM "[pixel]"
+
+   PROJECTION
+    "init=epsg:3857" 
+   END
+END
+
+LAYER
+# NASS 2012 landuse
+#  http://129.174.131.7/cgi/wms_cdlall.cgi?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities 
+   NAME NASS2012 
+   METADATA
+      "wms_title" "NASS CDL 2012"
+      "wms_srs"   "EPSG:4326" #geographic
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "cdl_2012"
+      LYRNAME "NASS Cropland Data Layer 2012"
+      LINK
+        "http://terraserver.microsoft.com/about.aspx?n=AboutTerraServiceOverview"
+   END
+
+   STATUS OFF
+   TYPE RASTER
+   TRANSPARENCY 80
+   CONNECTIONTYPE WMS
+   CONNECTION "http://129.174.131.7/cgi/wms_cdlall.cgi?"
+   CLASSITEM "[pixel]"
+
+   PROJECTION
+    "init=epsg:4326" #geographic
+   END
+END
+
+LAYER
+ NAME Landuse_Legend
+ TYPE RASTER
+ STATUS OFF
+ PROCESSING "SCALE=0,300000"
+ PROCESSING "SCALE_BUCKETS=50"
+ OFFSITE  0 0 0
+ TRANSPARENCY 100
+
+ CLASSITEM "[pixel]"
+ CLASS
+   NAME "Open Water (11)"
+     EXPRESSION ([pixel] = 11)
+     COLOR 72 109 161 
+   END
+ CLASS
+   NAME "Perennial Ice/Snow (12)"
+     EXPRESSION ([pixel] = 12)
+     COLOR 231 239 252 
+   END
+ CLASS
+   NAME "Developed, Open Space (21)"
+     EXPRESSION ([pixel] = 21)
+     COLOR 225 205 206
+   END
+ CLASS
+   NAME "Developed, Low Intesity (22)"
+     EXPRESSION ([pixel] = 22)
+     COLOR 220 152 129
+   END
+ CLASS
+   NAME "Developed, Medium Intensity (23)"
+     EXPRESSION ([pixel] = 23)
+     COLOR  241 1 0
+   END
+ CLASS
+   NAME "Developed, High Intensity (24)"
+     EXPRESSION ([pixel] = 24)
+     COLOR 171 1 1
+   END
+ CLASS
+   NAME "Barren Land (31)"
+     EXPRESSION ([pixel] = 31)
+     COLOR 179 175 164
+   END
+ CLASS
+   NAME "Deciduous Forest (41)"
+     EXPRESSION ([pixel] = 41)
+     COLOR 108 169 102
+   END
+ CLASS
+   NAME "Evergreen Forest (42)"
+   EXPRESSION ([pixel] = 42)
+   COLOR 29 101 51
+   END
+ CLASS 
+   NAME "Mixed Forest (43)"
+   EXPRESSION ([pixel] = 43)
+   COLOR 189 204 147
+   END
+ CLASS
+   NAME "Dwarf Scrub* (51)"
+   EXPRESSION ([pixel] = 51)
+   COLOR 176 150 63
+ END
+ CLASS
+   NAME "Shrub/Scrub (52)"
+   EXPRESSION ([pixel] = 52)
+   COLOR 209 187 130
+ END
+ CLASS
+   NAME "Grassland/Herbaceous (71)"
+   EXPRESSION ([pixel] = 71)
+   COLOR 215 214 158
+ END
+ CLASS 
+   NAME "Sedge/Herbaceous (72)"
+   EXPRESSION ([pixel] = 72)
+   COLOR 208 209 129
+ END
+ CLASS 
+   NAME "Moss"
+   EXPRESSION ([pixel] = 74)
+   COLOR 130 186 157
+ END
+ CLASS
+   NAME "Pasture Hay (81)"
+   EXPRESSION ([pixel] = 81)
+   COLOR 221 216 62
+ END
+ CLASS
+   NAME "Cultivated Crops (82)"
+   EXPRESSION ([pixel] = 82)
+   COLOR 174 114 41
+ END
+ CLASS
+   NAME "Woody Wetlands (90)"
+   EXPRESSION ([pixel] = 90)
+   COLOR 187 215 237
+ END
+ CLASS
+   NAME "Emergent Herbaceous Wetlands (95)"
+   EXPRESSION ([pixel] = 95)
+   COLOR 112 163 192
+ END
+
+
+PROJECTION
+  "proj=latlong"
+  END
+
+END
+
+LAYER
+# USGS Impervious surface 
+   NAME Impervious
+   METADATA
+      "wms_title" "USGS Impervious (2001)"
+      "wms_srs"   "EPSG:3857"
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "11"
+   END
+   STATUS OFF
+   TYPE RASTER
+   TRANSPARENCY 100
+   CONNECTIONTYPE WMS
+   CONNECTION "https://www.mrlc.gov/arcgis/services/LandCover/USGS_EROS_LandCover_NLCD/MapServer/WmsServer?"
+   CLASSITEM "[pixel]"
+   PROJECTION
+      "init=epsg:3857" 
+   END
+END
+
+
+LAYER
+# NRCS ssurgo soil map polygons
+   NAME SSURGO 
+   METADATA
+      "wms_title" "NRCS SSURGO"
+      "wms_srs"   "EPSG:4269" #geographic
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "MapunitPoly"
+      LYRNAME "NRCS SSURGO"
+      LINK
+        "http://terraserver.microsoft.com/about.aspx?n=AboutTerraServiceOverview"
+   END
+   STATUS OFF
+   TYPE RASTER
+#   TRANSPARENCY 80
+   CONNECTIONTYPE WMS
+   MINSCALE 10
+   MAXSCALE 50000
+   CONNECTION "https://SDMDataAccess.nrcs.usda.gov/Spatial/SDM.wms?"
+   PROJECTION
+     "init=epsg:4269" #geographic
+   END
+END
+
+LAYER
+#  HUC 12 Watershed boundaries 
+   NAME HUC 
+   METADATA
+      "wms_title" "HUC-12"
+      "wms_srs"   "EPSG:4326" #geographic
+      "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+      "wms_name" "5"
+      LYRNAME "5"
+      LINK
+        "http://map24.epa.gov/arcgis/services/OW/WBD_WMERC/MapServer/WMSServer"
+   END
+   STATUS OFF
+   TYPE RASTER
+   CONNECTIONTYPE WMS
+#   CONNECTION "http://map24.epa.gov/arcgis/services/OW/WBD_WMERC/MapServer/WMSServer?"
+   CONNECTION "http://watersgeo.epa.gov/ArcGIS/services/OW/WBD_WMERC/MapServer/WMSServer?"
+   PROJECTION
+     "init=epsg:4326" #geographic
+   END
+END
+LAYER
+#  HUC 8 Watershed boundaries
+   NAME HUC8
+   METADATA
+       "wms_title" "HUC-8"
+       "wms_srs"   "EPSG:4326" #geographic
+       "wms_format" "image/png"
+      "wms_server_version"  "1.1.1"
+       "wms_name" "3"
+    LYRNAME "3"
+	 LINK
+	   "http://map24.epa.gov/arcgis/services/OW/WBD_WMERC/MapServer/WMSServer"
+    END
+    STATUS OFF
+    TYPE RASTER
+    CONNECTIONTYPE WMS
+    CONNECTION "http://map24.epa.gov/arcgis/services/OW/WBD_WMERC/MapServer/WMSServer?"
+    PROJECTION
+      "init=epsg:4326" #geographic
+    END
+END
+
+#/home2/gis4wepp/prism
+
+LAYER
+# PRISM Preciptation map
+# The data are in mm scaled by 100 so 2540 represents 1 inch of precip. The tif file was created
+# by taking the PRISM long term annual ascii and converting to tif format (no other translation done)
+#
+  NAME PPT
+  TYPE RASTER
+  DATA "us_ann_avg.tif"
+  STATUS OFF
+  PROCESSING "SCALE=0,300000"
+  PROCESSING "SCALE_BUCKETS=50"
+  OFFSITE  0 0 0
+  TRANSPARENCY 100 
+  CLASSITEM "[pixel]"
+  CLASS
+    NAME "Precipitation 0 to 4 (in)"
+    EXPRESSION ([pixel] <= 10160)
+    COLOR 196 69 57
+  END
+ CLASS
+    NAME "Precipitation 4 to 8 (in)"
+    EXPRESSION ([pixel] > 10160 and [pixel] <= 20320)
+    COLOR 204 86 67
+  END
+  CLASS
+     NAME "Precipitation 8 to 12 (in)"
+     EXPRESSION ([pixel] > 10160 and [pixel] <= 30480)
+    COLOR 204 86 67
+  END
+
+  CLASS
+    NAME "Precipitation 12 to 16 (in)"
+    EXPRESSION ([pixel] > 30480 and [pixel] <= 40640)
+    COLOR 212 103 78
+  END
+   CLASS
+    NAME "Precipitation 16 to 20 (in)"
+    EXPRESSION ([pixel] > 40640 and [pixel] <= 50800)
+    COLOR 219 124 92
+  END
+
+ CLASS
+    NAME "Precipitation 20 to 24 (in)"
+    EXPRESSION ([pixel] > 50800 and [pixel] <= 60960)
+    COLOR 227 141 104
+  END
+ CLASS
+    NAME "Precipitation 24 to 28 (in)"
+    EXPRESSION ([pixel] > 60960 and [pixel] <= 71120)
+    COLOR 232 160 118
+  END
+ CLASS
+    NAME "Precipitation 28 to 32 (in)"
+    EXPRESSION ([pixel] > 71120 and [pixel] <= 81280)
+    COLOR 240 182 134
+  END
+CLASS
+    NAME "Precipitation 32  to 36 (in)"
+    EXPRESSION ([pixel] > 81280 and [pixel] <= 91440)
+    COLOR 245 202 149
+  END
+ CLASS
+    NAME "Precipitation 36 to 40 (in)"
+    EXPRESSION ([pixel] > 91440 and [pixel] <= 101600)
+    COLOR 250 223 165
+  END
+ CLASS
+    NAME "Precipitation 40 to 44 (in)"
+    EXPRESSION ([pixel] > 101600 and [pixel] <= 111760)
+    COLOR 252 244 182
+  END
+ CLASS
+    NAME "Precipitation 44 to 48 (in)"
+    EXPRESSION ([pixel] > 111760 and [pixel] <= 121920)
+    COLOR 247 247 193
+  END
+ CLASS
+    NAME "Precipitation 48 to 52 (in)"
+    EXPRESSION ([pixel] > 121920 and [pixel] <= 132080)
+    COLOR 226 227 195
+  END
+ CLASS
+    NAME "Precipitation 52 to 56 (in)"
+    EXPRESSION ([pixel] > 132080 and [pixel] <= 142240)
+    COLOR 207 209 199
+  END
+ CLASS
+    NAME "Precipitation 56 to 60 (in)"
+    EXPRESSION ([pixel] > 142240 and [pixel] <= 152400)
+    COLOR 185 190 201
+  END
+ CLASS
+    NAME "Precipitation 60 to 64 (in)"
+    EXPRESSION ([pixel] > 152400 and [pixel] <= 162560)
+    COLOR 165 172 201
+  END
+ CLASS
+    NAME "Precipitation 64 to 68 (in)"
+    EXPRESSION ([pixel] > 162560 and [pixel] <= 172720)
+    COLOR 143 154 204
+  END
+CLASS
+    NAME "Precipitation 68 to 72 (in)"
+    EXPRESSION ([pixel] > 172720 and [pixel] <= 182880)
+    COLOR 122 139 204
+  END
+ CLASS
+    NAME "Precipitation 72 to 82 (in)"
+    EXPRESSION ([pixel] > 182880 and [pixel] <= 208280)
+    COLOR 101 124 207
+  END
+ CLASS
+    NAME "Precipitation 82 to 100 (in)"
+    EXPRESSION ([pixel] > 208280 and [pixel] <= 254000)
+    COLOR 76 109 207
+  END
+
+ CLASS
+    NAME "Precipitation > 100 (in)"
+    EXPRESSION ([pixel] > 254000)
+    COLOR 52 98 207
+  END
+
+PROJECTION
+  "proj=latlong"
+END
+END
+
+LAYER
+# Fire locations for current year
+# http://activefiremaps.fs.fed.us/wms.php
+   NAME FIRE 
+   METADATA
+     "wms_title" "USFS Fire"
+     "wms_srs"   "EPSG:4269" #geographic
+     "wms_format" "image/png"
+     "wms_server_version"  "1.1.1"
+     "wms_name" "Cumulative Fire Detections"
+     LYRNAME "USFS Fire"
+     LINK
+       "http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&%20SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities&version=1.0.0"
+     END
+     STATUS OFF
+    TYPE RASTER
+     CONNECTIONTYPE WMS
+    CONNECTION "http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&"
+     PROJECTION
+     "init=epsg:4269" #
+     END
+END
+
+END

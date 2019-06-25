@@ -1,0 +1,2 @@
+Tue Nov 20 15:28:01 2018|uk9uim4ahgeusvbaucb6ij94pj|Working Directory: '/home/apex/usrruns_webgis/uk9uim4ahgeusvbaucb6ij94pj'<br>
+Tue Nov 20 15:28:01 2018|uk9uim4ahgeusvbaucb6ij94pj|Setup Session Directory|/home/apex/usrruns_webgis/uk9uim4ahgeusvbaucb6ij94pj

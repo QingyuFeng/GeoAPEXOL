@@ -1,0 +1,206 @@
+{
+	"tempws": 
+	{	
+		"model_setup": 
+		
+		{
+			"subid_snum":[],
+			"description_title": [],
+			"owner_id": "1",
+			"nvcn": "4",
+			"outflow_release_method_isao": "0"
+		},
+		  
+		"geographic": 
+		{
+			"wsa_ha":[],
+			"latitude_xct":[],
+			"longitude_yct":[],
+			"avg_upland_slplen_splg":[],
+			"avg_upland_slp":  [],
+			"uplandmanningn_upn": [],
+			"channellength_chl": [],
+			"channelslope_chs": [],
+			"channelmanningn_chn": [],
+			"channel_depth_chd": "0.2",
+			"reach_length_rchl": [],
+			"reach_depth_rchd": "0.2",
+			"reach_bottom_width_rcbw": "0.10",
+			"reach_top_width_rctw": "0.50",
+			"reach_slope_rchs": [],
+			"reach_manningsn_rchn": "0.05",
+			"reach_uslec_rchc": "0.005",
+			"reach_uslek_rchk": "0.30",
+			"reach_floodplain_rfpw": "0.00",
+			"reach_floodplain_length_rfpl": "0.00",
+			"rch_ksat_adj_factor_sat1": "1.00",
+			"subarea_elev_sael": []
+			
+		},
+		  
+		"land_use_type": 
+		{
+			"land_useid_luns": [],
+			"standing_crop_residue_stdo": "0.00"
+		},
+		  
+		"soil": 
+		{
+			"soilid":[]
+		},
+		  
+		"management": 
+		{
+			"opeartionid_iops":[],
+			"OPSName_Reference":[],
+			"min_days_automow_imw": "0",
+			"min_days_autonitro_ifa": "0", 
+			"liming_code_lm": "1", 
+			"furrow_dike_code_ifd": "0",
+			"fd_water_store_fdsf": "0.010", 
+			"autofert_lagoon_idf1": "0",
+			"auto_manure_feedarea_idf2": "0",
+			"auto_commercial_p_idf3": "0",
+			"auto_commercial_n_idf4": "0",
+			"auto_solid_manure_idf5": "0",
+			"auto_commercial_k_idf6": "0",
+			"nstress_trigger_auton_bft": "0.00",
+			"auton_rate_fnp4": "0.00",
+			"auton_manure_fnp5": "0.00",
+			"max_annual_auton_fmx": "0.00"
+		},	  
+		  
+		"drainage":
+		{
+			"drainage_depth_idr": [],
+			"drain_days_end_w_stress_drt": "2.00"
+		},
+		  
+		  
+		"grazing":
+		{
+			"feeding_area_ii": "0",
+			"manure_app_area_iapl": "0",
+			"feedarea_pile_autosolidmanure_rate_fnp2": "0.00",
+			"herds_eligible_forgrazing_ny1": "0",
+			"herds_eligible_forgrazing_ny2": "0",
+			"herds_eligible_forgrazing_ny3": "0",
+			"herds_eligible_forgrazing_ny4": "0",
+			"herds_eligible_forgrazing_ny5": "0",
+			"herds_eligible_forgrazing_ny6": "0",
+			"herds_eligible_forgrazing_ny7": "0",
+			"herds_eligible_forgrazing_ny8": "0",
+			"herds_eligible_forgrazing_ny9": "0",
+			"herds_eligible_forgrazing_ny10": "0",
+			"grazing_limit_herd_xtp1": "0.00",
+			"grazing_limit_herd_xtp2": "0.00",
+			"grazing_limit_herd_xtp3": "0.00",
+			"grazing_limit_herd_xtp4": "0.00",
+			"grazing_limit_herd_xtp5": "0.00",
+			"grazing_limit_herd_xtp6": "0.00",
+			"grazing_limit_herd_xtp7": "0.00",
+			"grazing_limit_herd_xtp8": "0.00",
+			"grazing_limit_herd_xtp9": "0.00",
+			"grazing_limit_herd_xtp10": "0.00"
+		},
+		  
+		"weather":
+		{
+			"daily_wea_stnid_iwth": "0",
+			"begin_water_in_snow_sno": "0.00"
+		},
+		  
+		"wind_erosion":
+		{
+			"azimuth_land_slope_azm": "0.00",
+			"field_lenthkm_fl": "0.00",
+			"field_widthkm": "0.00",
+			"angel_of_fieldlength_angl": "0.00"
+		},
+		  
+		"water_erosion":
+		{
+			"usle_p_pec": "1.00"
+		},
+
+		"flood_plain":
+		{
+			"flood_plain_frac_ffpq": "0.00",
+			"fp_ksat_adj_factor_fps1": "1.00"
+		},
+		  
+		"urban":
+		{
+			"urban_frac_urbf": "0.00"
+		},
+		  
+		"reservoir":
+		{
+			"elev_emers_rsee": "0.00",
+			"res_area_emers_rsae": "0.00",
+			"runoff_emers_rsve": "0.00",
+			"elev_prins_rsep": "0.00",
+			"res_area_prins_rsap": "0.00",
+			"runoff_prins_rsvp": "0.00",
+			"ini_res_volume_rsv": "0.00",
+			"avg_prins_release_rate_rsrr": "0.00",
+			"ini_sed_res_rsys": "0.00",
+			"ini_nitro_res_rsyn": "0.00",
+			"hydro_condt_res_bottom_rshc": "0.00",
+			"time_sedconc_tonormal_rsdp": "0.00",
+			"bd_sed_res_rsbd": "0.00"
+		},
+
+		"pond":
+		{
+			"frac_pond_pcof": "0.00",
+			"frac_lagoon_dalg": "0.00",
+			"lagoon_vol_ratio_vlgn": "0.00",
+			"wash_water_to_lagoon_coww": "0.00",
+			"time_reduce_lgstorage_nom_ddlg": "0.00",
+			"ratio_liquid_manure_to_lg_solq": "0.00",
+			"frac_safety_lg_design_sflg": "0.00"
+		},
+
+		"buffer":
+		{
+			"frac_buffer_bcof": "0.00",
+			"buffer_flow_len_bffl": "0.00"
+		},
+
+		"irrigation":
+		{
+			"regidity_irrig_nirr": "0",
+			"irrigation_irr": "0",
+			"min_days_btw_autoirr_iri": "0",
+			"waterstress_triger_irr_bir": "0.00",
+			"irr_lost_runoff_efi": "0.00",
+			"max_annual_irri_vol_vimx": "0.00",
+			"min_single_irrvol_armn": "0.00", 
+			"max_single_irrvol_armx": "0.00",
+			"factor_adj_autoirr_firg": "0.00",
+			"subareaid_irrreservior_irrs": "0",
+			"subareaid_irrwell_irrw": "0"
+			},
+
+
+		"point_source":
+		{
+			"point_source_ipts": "0"
+		},
+		
+		"water_table":
+		{
+			"min_watertable_wtmn": "0.00",
+			"max_watertable_wtmx": "0.00",
+			"initial_watertable_wtbl": "0.00",
+			"ground_waterstorage_gwst": "0.00",
+			"maxground_waterstorage_gwmx": "0.00",
+			"groundwater_residencetime_rftt": "0.00",
+			"returnflowfraction_rfpk": "0.00"
+
+		}
+		   
+	}
+}
+

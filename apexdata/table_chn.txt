@@ -1,0 +1,5 @@
+1,A1, 'Earth, straight and uniform',0.0250, 0.016_0.033
+2,A2, 'Earth, winding and sluggish',0.0350, 0.023_0.050
+3,A3, 'Not maintained, weeds and brush',0.0750, 0.040_0.140
+4,B1, 'Few trees, stones or brush',0.0500, empty
+5,B2, 'Heavy timber and brush',0.1000, empty

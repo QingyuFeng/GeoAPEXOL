@@ -1,0 +1,338 @@
+{  
+   "runoff":
+   {
+	"level1":
+		{"min":0.00,
+		"max":50.00,
+		"RGB1":236,
+		"RGB2":236,
+		"RGB3":255,
+		"Label":"Runoff 0 - 50 mm/yr"
+		},
+	"level2":
+		{"min":50.00,
+		"max":100.00,
+		"RGB1":202,
+		"RGB2":202,
+		"RGB3":255,
+		"Label":"Runoff 50 - 100 mm/yr"
+		},
+	"level3":
+		{"min":100.00,
+		"max":150.00,
+		"RGB1":166,
+		"RGB2":166,
+		"RGB3":255,
+		"Label":"Runoff 100 - 150 mm/yr"
+		},		
+	"level4":
+		{"min":150.00,
+		"max":200.00,
+		"RGB1":140,
+		"RGB2":140,
+		"RGB3":255,
+		"Label":"Runoff 150 - 200 mm/yr"
+		},
+	"level5":
+		{"min":200.00,
+		"max":250.00,
+		"RGB1":121,
+		"RGB2":121,
+		"RGB3":255,
+		"Label":"Runoff 200 - 250 mm/yr"
+		},
+	"level6":
+		{"min":250.00,
+		"max":300.00,
+		"RGB1":98,
+		"RGB2":98,
+		"RGB3":255,
+		"Label":"Runoff 250 - 300 mm/yr"
+		},
+	"level7":
+		{"min":300.00,
+		"max":350.00,
+		"RGB1":70,
+		"RGB2":70,
+		"RGB3":255,
+		"Label":"Runoff 300 - 350 mm/yr"
+		},
+	"level8":
+		{"min":350.00,
+		"max":400.00,
+		"RGB1":36,
+		"RGB2":36,
+		"RGB3":255,
+		"Label":"Runoff 350 - 400 mm/yr"
+		},
+	"level9":
+		{"min":400.00,
+		"max":450.00,
+		"RGB1":18,
+		"RGB2":18,
+		"RGB3":255,
+		"Label":"Runoff 400 - 450 mm/yr"
+		},
+	"level10":
+		{"min":450.00,
+		"max":9999.00,
+		"RGB1":0,
+		"RGB2":0,
+		"RGB3":255,
+		"Label":"Runoff > 450 mm/yr"
+		}
+	},
+	"soilerosion":
+   {
+	"level1":
+		{"min":0.00,
+		"max":0.50,
+		"RGB1":255,
+		"RGB2":247,
+		"RGB3":230,
+		"Label":"Soil Loss 0 - 0.5 t/ha/yr"
+		},
+	"level2":
+		{"min":0.50,
+		"max":1.00,
+		"RGB1":255,
+		"RGB2":231,
+		"RGB3":179,
+		"Label":"Soil Loss 0.5 - 1 t/ha/yr"
+		},
+	"level3":
+		{"min":1.00,
+		"max":1.50,
+		"RGB1":255,
+		"RGB2":215,
+		"RGB3":128,
+		"Label":"Soil Loss 1 - 1.5 t/ha/yr"
+		},		
+	"level4":
+		{"min":1.50,
+		"max":2.00,
+		"RGB1":255,
+		"RGB2":198,
+		"RGB3":77,
+		"Label":"Soil Loss 1.5 - 2 t/ha/yr"
+		},
+	"level5":
+		{"min":2.00,
+		"max":2.50,
+		"RGB1":255,
+		"RGB2":182,
+		"RGB3":26,
+		"Label":"Soil Loss 2.0 - 2.5 t/ha/yr"
+		},
+	"level6":
+		{"min":2.50,
+		"max":3.00,
+		"RGB1":230,
+		"RGB2":157,
+		"RGB3":0,
+		"Label":"Soil Loss 2.5 - 3 t/ha/yr"
+		},
+	"level7":
+		{"min":3.00,
+		"max":3.50,
+		"RGB1":179,
+		"RGB2":122,
+		"RGB3":0,
+		"Label":"Soil Loss 3.0 - 3.5 t/ha/yr"
+		},
+	"level8":
+		{"min":3.50,
+		"max":4.00,
+		"RGB1":153,
+		"RGB2":105,
+		"RGB3":0,
+		"Label":"Soil Loss 3.5 - 4 t/ha/yr"
+		},
+	"level9":
+		{"min":4.00,
+		"max":4.50,
+		"RGB1":102,
+		"RGB2":70,
+		"RGB3":0,
+		"Label":"Soil Loss 4 - 4.5 t/ha/yr"
+		},
+	"level10":
+		{"min":4.50,
+		"max":9999.00,
+		"RGB1":51,
+		"RGB2":35,
+		"RGB3":0,
+		"Label":"Soil Loss > 4.5 t/ha/yr"
+		}
+	},
+	"nitrogen":
+   {
+		"level1":
+		{"min":0.0,
+		"max":10.0,
+		"RGB1":230,
+		"RGB2":255,
+		"RGB3":238,
+		"Label":"Total N Loss 0 - 10 kg/ha/yr"
+		},
+	"level2":
+		{"min":10.0,
+		"max":20.0,
+		"RGB1":179,
+		"RGB2":255,
+		"RGB3":203,
+		"Label":"Total N Loss 10 - 20 kg/ha/yr"
+		},
+	"level3":
+		{"min":20.0,
+		"max":30.0,
+		"RGB1":128,
+		"RGB2":255,
+		"RGB3":168,
+		"Label":"Total N Loss 20 - 30 kg/ha/yr"
+		},		
+	"level4":
+		{"min":30.0,
+		"max":40.0,
+		"RGB1":77,
+		"RGB2":255,
+		"RGB3":133,
+		"Label":"Total N Loss 30 - 40 kg/ha/yr"
+		},
+	"level5":
+		{"min":40.00,
+		"max":50.00,
+		"RGB1":26,
+		"RGB2":255,
+		"RGB3":98,
+		"Label":"Total N Loss 40 - 50 kg/ha/yr"
+		},
+	"level6":
+		{"min":50.0,
+		"max":60.00,
+		"RGB1":0,
+		"RGB2":230,
+		"RGB3":73,
+		"Label":"Total N Loss 50 - 60 kg/ha/yr"
+		},
+	"level7":
+		{"min":60.00,
+		"max":70.0,
+		"RGB1":0,
+		"RGB2":179,
+		"RGB3":57,
+		"Label":"Total N Loss 60 - 70 kg/ha/yr"
+		},
+	"level8":
+		{"min":70.00,
+		"max":80.00,
+		"RGB1":0,
+		"RGB2":128,
+		"RGB3":40,
+		"Label":"Total N Loss 70 - 80 kg/ha/yr"
+		},
+	"level9":
+		{"min":80.00,
+		"max":90.0,
+		"RGB1":0,
+		"RGB2":77,
+		"RGB3":24,
+		"Label":"Total N Loss 80 - 90 kg/ha/yr"
+		},
+	"level10":
+		{"min":90.0,
+		"max":9999.00,
+		"RGB1":0,
+		"RGB2":26,
+		"RGB3":8,
+		"Label":"Total N Loss > 90 kg/ha/yr"
+		}
+	},   
+	"phosphorus":
+   {
+	"level1":
+		{"min":0.00,
+		"max":0.50,
+		"RGB1":255,
+		"RGB2":245,
+		"RGB3":230,
+		"Label":"Total P Loss 0 - 0.5 kg/ha/yr"
+		},
+	"level2":
+		{"min":0.50,
+		"max":1.00,
+		"RGB1":255,
+		"RGB2":224,
+		"RGB3":179,
+		"Label":"Total P Loss 0.5 - 1 kg/ha/yr"
+		},
+	"level3":
+		{"min":1.00,
+		"max":1.50,
+		"RGB1":255,
+		"RGB2":204,
+		"RGB3":128,
+		"Label":"Total P Loss 1 - 1.5 kg/ha/yr"
+		},		
+	"level4":
+		{"min":1.50,
+		"max":2.00,
+		"RGB1":255,
+		"RGB2":184,
+		"RGB3":77,
+		"Label":"Total P Loss 1.5 - 2 kg/ha/yr"
+		},
+	"level5":
+		{"min":2.00,
+		"max":2.50,
+		"RGB1":255,
+		"RGB2":163,
+		"RGB3":26,
+		"Label":"Total P Loss 2.0 - 2.5 kg/ha/yr"
+		},
+	"level6":
+		{"min":2.50,
+		"max":3.00,
+		"RGB1":230,
+		"RGB2":138,
+		"RGB3":0,
+		"Label":"Total P Loss 2.5 - 3 kg/ha/yr"
+		},
+	"level7":
+		{"min":3.00,
+		"max":3.50,
+		"RGB1":179,
+		"RGB2":107,
+		"RGB3":0,
+		"Label":"Total P Loss 3.0 - 3.5 kg/ha/yr"
+		},
+	"level8":
+		{"min":3.50,
+		"max":4.00,
+		"RGB1":128,
+		"RGB2":77,
+		"RGB3":0,
+		"Label":"Total P Loss 3.5 - 4 kg/ha/yr"
+		},
+	"level9":
+		{"min":4.00,
+		"max":4.50,
+		"RGB1":77,
+		"RGB2":46,
+		"RGB3":0,
+		"Label":"Total P Loss 4 - 4.5 kg/ha/yr"
+		},
+	"level10":
+		{"min":4.50,
+		"max":9999.00,
+		"RGB1":26,
+		"RGB2":15,
+		"RGB3":0,
+		"Label":"Total P Loss > 4.5 kg/ha/yr"
+		}
+	}      
+   
+   
+}
+
+
