@@ -7,4 +7,4 @@ The results will be presented in two formats, maps and tables.
 The package also include a serversetup.sh, which contains the packages required to run the interface. 
 Currently, this interface is deployed at http://horizon.nserl.purdue.edu/geoapexol for inner testing. Users who are interested to test it can contact me for user name and password.
 
-
+The geoapexol_index.php.png is a structure of function calls from the index.php, which may help users have a better understanding of the interface.
