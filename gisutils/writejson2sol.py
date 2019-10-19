@@ -20,12 +20,13 @@ import sys
 #######################################################
 
 fddata = sys.argv[1]
-
+scenariofdname = sys.argv[2]
 #fddata = 'devfld'
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scenariofdname
     )
 
 fin_soljson = os.path.join(

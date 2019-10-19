@@ -79,7 +79,7 @@ class MainClass():
         """Constructor."""
 
         # Get the legend classes
-        self.suslegendlevel = self.readJSON(fin_legendlevels)
+        self.msalegendlevel = self.readJSON(fin_legendlevels)
 
         # Get the all scenarios
         self.allscenarios = self.readJSON(fin_allscenario)
@@ -101,19 +101,249 @@ class MainClass():
         # Read in the sus, get the values, get the max of each vari
         # store the results
         # Stores scenario:allwaterhed:susforallwatershed
-        self.allsce_susdf, self.qsnpmax = self.sus2wssubrsnp(
-                                            fdapexrun,
-                                            self.wssubflddict2, 
-                                            self.allscenarios)
-                  
+#        self.allsce_susdf, self.qsnpmax = self.sus2wssubrsnp(
+#                                            fdapexrun,
+#                                            self.wssubflddict2, 
+#                                            self.allscenarios)
+        
+        # Commented by Qingyu Feng
+        # The SUS results has some problems and we always met **s in it.
+        # I will get now all of the results from the MSA files.
+#        print(self.allsce_susdf, self.qsnpmax)
+        self.allsce_msa, self.qsnpmax = self.MSA2wssubrsnp(
+                fdapexrun,
+                self.wssubflddict2, 
+                self.allscenarios)
+           
         # Then, generate global levels and assign to each class
-        self.wssubrsnp, self.suslegendlevelnew = self.getAssignLevels(
-                self.allsce_susdf,
+        self.wssubrsnp, self.msalegendlevelnew = self.getAssignLevelsMSA(
+                self.allsce_msa,
                 self.qsnpmax,
-                self.suslegendlevel,
+                self.msalegendlevel,
                 self.wssubflddict2
                 )
-               
+        
+#        print(self.wssubrsnp)
+
+
+
+    def getAssignLevelsMSA(self,
+                        allsce_msa,
+                        qsnpmax,
+                        msalegendlevel,
+                        wssubflddict2
+                        ):
+                
+        # Generate levels based on max values:
+        qlevel = self.generateLevels(float(qsnpmax[0]), 10)
+        selevel = self.generateLevels(float(qsnpmax[1]), 10)
+        nlevel = self.generateLevels(float(qsnpmax[2]), 10)
+        plevel = self.generateLevels(float(qsnpmax[3]), 10)
+        
+        # Modify the suslegendlevel json based on new values
+        newlevel = copy.deepcopy(msalegendlevel)
+        for lidx in range(10):
+            levkey = "level%i" %(lidx+1)
+            newlevel['runoff'][levkey]["min"] = qlevel[lidx]
+            newlevel['runoff'][levkey]["max"] = qlevel[lidx+1]
+            newlevel['soilerosion'][levkey]["min"] = selevel[lidx]
+            newlevel['soilerosion'][levkey]["max"] = selevel[lidx+1]
+            newlevel['nitrogen'][levkey]["min"] = nlevel[lidx]
+            newlevel['nitrogen'][levkey]["max"] = nlevel[lidx+1]
+            newlevel['phosphorus'][levkey]["min"] = plevel[lidx]
+            newlevel['phosphorus'][levkey]["max"] = plevel[lidx+1]
+    
+        allsceoutdict = {}
+        
+        # Modify the results to generate a dictionary 
+        for ks, vs in allsce_msa.items():
+            allsceoutdict[ks] = {}
+            msarltdict = None
+            msarltdict = copy.deepcopy(wssubflddict2)
+            # Loop through the watersheds and read in asa
+            for key, value in wssubflddict2.items():
+                allsceoutdict[ks] = self.assignLevelsMSA(
+                            allsce_msa[ks][key], 
+                            qlevel,
+                            selevel,
+                            nlevel,
+                            plevel,
+                            msarltdict,
+                            key)
+                
+        return allsceoutdict, newlevel
+
+
+
+    def assignLevelsMSA(self, 
+                     msa_ag, 
+                    qlevel,
+                    selevel,
+                    nlevel,
+                    plevel,
+                    outdict,
+                    key):        
+        
+        for k, v in outdict[key].items():
+            outdict[key][k]  = [[],[]] # 0 for abs value, 0 for class
+            # It seems that the rasters do not like 0s.
+            # Before appending, add some code to make it really small
+            # but not zero.            
+            # Define classes here
+            for qlid in range(1, len(qlevel)):
+#                print(msa_ag[(k, "Q")])
+                if self.checkinbetween(msa_ag[(k, "Q")], 
+                                       qlevel[qlid-1],
+                                       qlevel[qlid]):
+                    outdict[key][k][0].append(msa_ag[(k, "Q")])
+                    outdict[key][k][1].append(str(qlid))
+                    break
+
+            for selid in range(1, len(selevel)):
+                if self.checkinbetween(msa_ag[(k, "MUSL")], 
+                                       selevel[selid-1],
+                                       selevel[selid]):
+                    outdict[key][k][0].append(msa_ag[(k, "MUSL")])
+                    outdict[key][k][1].append(str(selid))
+                    break          
+
+            for tnlid in range(1, len(nlevel)):
+                if self.checkinbetween(msa_ag[(k, "TN")],
+                                       nlevel[tnlid-1],
+                                       nlevel[tnlid]):
+                    outdict[key][k][0].append(msa_ag[(k, "TN")])
+                    outdict[key][k][1].append(str(tnlid))
+                    break 
+ 
+            for tplid in range(1, len(plevel)):
+                if self.checkinbetween(msa_ag[(k, "TP")],
+                                       plevel[tplid-1],
+                                       plevel[tplid]):
+                    outdict[key][k][0].append(msa_ag[(k, "TP")])
+                    outdict[key][k][1].append(str(tplid))
+                    break  
+      
+        return outdict
+
+              
+        
+    def MSA2wssubrsnp(self, fdapexrun,
+                wssubflddict2, 
+                allscenario): 
+
+        allsce_msadf = {} 
+        # maximum values of q, s, n and p
+        qsnpmax = [0,0,0,0]
+
+        for ks, vs in allscenario.items():
+            if not "full" in ks:
+                allsce_msadf[ks] = {}
+                # Loop through the watersheds and read in asa
+                for key, value in wssubflddict2.items():
+                    fnmsarun = ''
+                    fnmsarun = '%s/sce%s/RSUB%s_%s.MSA' %(fdapexrun,
+                                                    vs,
+                                                    key, 
+                                                    vs)
+                    print('processing ', fnmsarun)
+                    msakey = None
+                    qnspmax, msakey = self.readmsa2dflevel(
+                            fnmsarun,
+                            qsnpmax)
+                    
+                    allsce_msadf[ks][key] = msakey
+            
+        return allsce_msadf, qsnpmax
+                
+        
+    def readmsa2dflevel(self, fnmsarun,
+                            qsnpmax):        
+        fid = open(fnmsarun, 'r')
+        lif = fid.readlines()
+        fid.close()
+        
+        # The first 10 lines are heads and we do not need it
+        del(lif[0:10])
+        
+        # Separate the lines in each line and then put it into
+        # a dataframe
+        # create a dataframe to store the info.
+        dfmsa = None
+        
+        for lidx in range(len(lif)):
+            lif[lidx] = lif[lidx].split(' ')
+            while '' in lif[lidx]:
+                lif[lidx].remove('')
+            lif[lidx][-1] = lif[lidx][-1][:-1]
+            
+            for idx2 in range(5, len(lif[lidx])-1):
+                if math.isnan(float(lif[lidx][idx2])):
+                    lif[lidx][idx2] = 0.00
+                else:
+                    lif[lidx][idx2] = float(lif[lidx][idx2])
+            
+        labels = ["OrderNO", "SubNO", "YearXXXX",
+                  "YearOrder", "OutVar", "Jan",
+                  "Feb", "Mar", "Apr", "May",
+                  "June", "July", "Aug",  "Sept",
+                  "Oct", "Nov", "Dec", "YearSum", "OutVar2"]
+        
+        dfmsa = pd.DataFrame.from_records(
+                lif,
+                columns=labels) 
+
+#        self.avgSlpLen = self.dfasc[['subno', 'plen']].groupby('subno')['plen'].mean().to_dict()
+        dict_subvarannavg = None
+        dict_subvarannavg = dfmsa[['SubNO', 'OutVar',"YearSum"
+            ]].groupby(['SubNO','OutVar'])['YearSum'].mean().to_dict()
+        
+        # Now we get the average annual values for each variable
+        # at each subarea. But we need to add two more, the total nitrogen
+        # and total phosphorus
+        # Current variables include
+        # [PRCP, Q, QDR,MUSL, QN, YN, SSFN, PRKN, QDRN
+        #  YP, QP, QDRP, QRFN, MNP, YPM, YPO]
+        # Loop through the subareas
+        subnolst = None
+        subnolst = dfmsa['SubNO'].unique()
+                
+        for subid in subnolst:
+            dict_subvarannavg[(subid,"TN")] = [
+                    dict_subvarannavg[(subid,"QN")]
+                + dict_subvarannavg[(subid,"YN")]
+                + dict_subvarannavg[(subid,"SSFN")]
+                + dict_subvarannavg[(subid,"PRKN")]
+                + dict_subvarannavg[(subid,"QDRN")]][0]
+            dict_subvarannavg[(subid,"TP")] = [
+                    dict_subvarannavg[(subid,"YP")]
+                + dict_subvarannavg[(subid,"QP")]
+                + dict_subvarannavg[(subid,"SSFN")]
+                + dict_subvarannavg[(subid,"PRKN")]
+                + dict_subvarannavg[(subid,"QDRN")]][0]
+           
+            if (dict_subvarannavg[(subid,"TN")] > 50.0):
+                dict_subvarannavg[(subid,"TN")] = 49.0
+            if (dict_subvarannavg[(subid,"TP")] > 10.0):
+                dict_subvarannavg[(subid,"TP")] = 9.0
+            # Get compare to the values to get max
+            if (dict_subvarannavg[(subid,"Q")] > qsnpmax[0]):
+                qsnpmax[0] = dict_subvarannavg[(subid,"Q")]
+            if (dict_subvarannavg[(subid,"MUSL")] > qsnpmax[1]):
+                qsnpmax[1] = dict_subvarannavg[(subid,"MUSL")]
+            if (dict_subvarannavg[(subid,"TN")] > qsnpmax[2]):
+                qsnpmax[2] = dict_subvarannavg[(subid,"TN")]
+            if (dict_subvarannavg[(subid,"TP")] > qsnpmax[3]):
+                qsnpmax[3] = dict_subvarannavg[(subid,"TP")]
+              
+        return qsnpmax, dict_subvarannavg
+        
+
+        
+        
+        
+        
+        
+        
     def getAssignLevels(self,
                         allsce_susdf,
                         qsnpmax,
@@ -383,7 +613,7 @@ class MainClass():
     
     def checkinbetween(self, val, valmin, valmax):
         
-        if ((val > valmin) and (val <= valmax)):
+        if ((val >= valmin) and (val < valmax)):
             return True
         else:
             return False
@@ -444,10 +674,11 @@ if os.path.isfile(fout_legendlevels):
 with open(fnout_aaqsnpclassabs, 'w') as outfile:
     json.dump(MainClass.wssubrsnp, outfile)
 with open(fout_legendlevels, 'w') as outfile1:
-    json.dump(MainClass.suslegendlevelnew, outfile1)
+    json.dump(MainClass.msalegendlevelnew, outfile1)
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
 #######################################################
+
 

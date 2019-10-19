@@ -20,7 +20,7 @@ import copy
 #######################################################
 
 fddata = sys.argv[1]
-scenario = sys.argv[2]
+scenariofdname = sys.argv[2]
 
 #fddata = 'devfld'
 #scenario = 'trees'
@@ -32,12 +32,14 @@ fdapexrun = os.path.join(
 
 fin_wssubsollujson = os.path.join(
     fdapexrun,
+    scenariofdname,
     'wssubsollulatlon.json'
     )
 
 fout_wssubsollujson = os.path.join(
     fdapexrun,
-    'wssubsollulatlon%s.json' %(scenario)
+    scenariofdname,
+    'wssubsollulatlon%s.json' %(scenariofdname[3:])
     )
 
 
@@ -55,7 +57,7 @@ class apexinputs():
         self.sollulatlong = self.read_json(fin_wssubsollujson)
         
         # Modify the json
-        self.newjson = self.modfallow(self.sollulatlong, scenario)
+        self.newjson = self.modfallow(self.sollulatlong, scenariofdname[3:])
 
 
     def modfallow(self, oldjson, scenario):

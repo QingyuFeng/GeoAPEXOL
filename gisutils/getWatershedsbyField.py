@@ -93,7 +93,6 @@ gdalrecpyfile = os.path.join(
 # Defining classes
 #######################################################
 class MainClass():
-
     def __init__(self):
         """Constructor."""
 
@@ -102,7 +101,6 @@ class MainClass():
         self.subinfld = self.getunisubnoslist(
             fin_demwfld,
             fout_unisubno)
-        
         
         # Read in asc data for later processing
         self.dtsubno = self.readASCstr(fin_demwasc)
@@ -125,10 +123,13 @@ class MainClass():
         # or tree file. 
         self.treedict2 = self.rmExtraStrm(self.uniqsubno, 
                                          self.treedict) 
-
+#        for k, v in self.treedict2.items():
+#            print(k, v)
         # A graph representing the subareas 
         self.watershedGraph = self.graphForWS(
             self.treedict2)
+
+#        print(self.watershedGraph)
 
         # A list of subarea numbers that are flowing out
         # the field boundaries. These will be used as the
@@ -137,16 +138,71 @@ class MainClass():
         self.fieldOutletSubs = self.getFieldWSOutlets(self.subinfld,
                                               self.treedict2)
 
+#        print(self.fieldOutletSubs)
         # A list of list storing the path of each watershed using
         # the outlets in the outlet list.
         self.wssubdict = self.findWatersheds(
                                     self.watershedGraph,
                                     self.fieldOutletSubs)
+        
+        
+        # remove watersheds that already contained in other watersheds
+        # This is done here because we do not know which watersheds has
+        # more subareas. The reason to do this is to remove extra simulation
+        # and remove mainly single subarea. 
+        # This does not happen all the time. It happens most of the time
+        # because of more than 2 (for example 1, 2, 3 drains to 4).
+        # There are two situation this happens:
+        # Taudem to make the rule only at most 2 drains to one downstream. 
+        # But some times only 1 drains to it, so a extra empty number was
+        # added. Or the stream was two small or not delineated.
+        # Other times there are 3 drains to 1. 
+        # I solved the two situations by removing/reconnecting the streams
+        # and remove extra watersheds caused by watershed finds by depthfirst
+        # search algorithms. 
+#        print(self.wssubdict)
+        self.wssubdict2 = self.removeextraWS(self.wssubdict)
+        
 
-        #print(self.wssubdict)
+
         # reclassify the demw to each watershed for testing
         self.reclassPair = self.reclassifyDEMW(
-                                    self.wssubdict)
+                                    self.wssubdict2)
+
+
+    def removeextraWS(self, wssubdict):
+            
+        # This function was written to remove single subareas already
+        # contained in other watersheds.
+        # The steps include: 
+        # 1. Construct a list ordered by length of watershed subarea numbers.
+        # 2. Construct a list of watershed only have 1 subareas.
+        # 3. Loop through each of the first list, if the one subarea is
+        # found in one larger watershed, remove the subarea from the list.
+        wslist = sorted([v for k, v in wssubdict.items()], key=len, reverse=True)
+        
+        singlesublist = [v for k, v in wssubdict.items() if (len(v) == 1)]
+        
+        subtobepoped = []
+        
+        for wsid in wslist:
+            if len(wsid) > 1:
+                for subno in singlesublist:
+                    if subno[0] in wsid:
+                        subtobepoped.append(subno[0])
+                        
+        for rmid in subtobepoped:
+            wslist.remove([rmid])
+            
+        # Create a new dictionary
+        wsdict = {}
+        
+        for wsid2 in range(len(wslist)):
+            wsdict[wsid2+1] = wslist[wsid2]
+        
+        return wsdict
+
+
 
 
     def readASCstr(self, finasc):
@@ -191,42 +247,65 @@ class MainClass():
         This function removed the subareas from subnoinstream
         which do not exist in subnoindemw. 
         '''
+        # substrm is the list of subnumbers in the tree file
+        # substrmtorm is the stream number only exists in the 
+        # tree file but not in the demw files (the raster map)
         substrm = substreamdict.keys()
         
         substrmtorm = [i for i in substrm
                        if not i in subdemwlst]
         
-        for subid in substrmtorm:
+        # Here I just removed them by reconnecting the streams
+#        print(substrmtorm)
+        
+        print(substrmtorm)
+        
+        for subid in range(len(substrmtorm)):
             
+#            print("processing subarea: ", subid)
             # Get the upstream and downstrema of the value to be removed
             tempvalue = None
-            tempvalue = substreamdict[subid]
+            tempvalue = substreamdict[substrmtorm[subid]]
+#            print('temo...: ',subid, tempvalue)
             
             # The streams connected by this need to be modified
             # value of dict [sub, downstrm, upstream1, upstream2]
             # upstream1 = tempvalue[2]
-            #print('target: ',tempvalue)
             
-            # Change the downstream of this subarea's upstream to
-            # its downstream
-            if not substreamdict[tempvalue[2]][1] == '-1':
-                #print('upstream1: ',substreamdict[tempvalue[2]])
-                substreamdict[tempvalue[2]][1] = tempvalue[1]
-                #print('upstream1 lat: ',substreamdict[tempvalue[2]])
-                
-            if not substreamdict[tempvalue[3]][1] == '-1':
-                #print('upstream2: ',substreamdict[tempvalue[3]])
-                substreamdict[tempvalue[3]][1] = tempvalue[1]
-                #print('upstream2 lat: ',substreamdict[tempvalue[3]])
-                
+            # Change this subarea's downstream's upstream to
+            # this subarea's downstream
+            # There are two upstreams.
+            # Since we are removing, and the upstreams will have 
+            # a downstream, which is the one to be removed. This downstream
+            # will be changed to the to-be-removed stream's downstream 
+            # to make the connection. 
+            # index 0 is downstream
+#            print('upstream1: ',tempvalue[1],substreamdict[tempvalue[1]])
+            substreamdict[tempvalue[1]][0] = tempvalue[0]
+#            print('upstream1 lat: ', tempvalue[1],substreamdict[tempvalue[1]])
+            
+#            print('upstream2...: ',tempvalue[2],substreamdict[tempvalue[2]])
+            substreamdict[tempvalue[2]][0] = tempvalue[0]
+#            print('upstream2 lat: ', tempvalue[2], substreamdict[tempvalue[2]])
+
             # Change the upstream of this subarea's downstream to
             # its first upstream
-            #print('downstream', substreamdict[tempvalue[1]])
-            if not substreamdict[tempvalue[1]][2] == '-1':
-                #print('downstream1: ',substreamdict[tempvalue[1]])
-                substreamdict[tempvalue[1]][2] = tempvalue[2]
-                #print('downstream1 lat: ',substreamdict[tempvalue[1]])
-                
+            # The downstream might have two upstream, only change the one
+            # that is equal to the subarea to be removed.
+#            print('downstream', tempvalue[0], substreamdict[tempvalue[0]][1])
+#            print('downstream', tempvalue[0], substreamdict[tempvalue[0]][2])
+            
+            if (substreamdict[tempvalue[0]][1] == substrmtorm[subid]):
+#                print('upstream1: ',substreamdict[tempvalue[0]])
+                substreamdict[tempvalue[0]][1] = tempvalue[1]
+#                print('upstream1 later: ',substreamdict[tempvalue[0]])
+            elif (substreamdict[tempvalue[0]][2] == substrmtorm[subid]):
+#                print('upstream2: ',substreamdict[tempvalue[0]])
+                substreamdict[tempvalue[0]][2] = tempvalue[1]
+#                print('upstream2 later: ',substreamdict[tempvalue[0]])
+            
+            # First remove keys in dict
+            substreamdict.pop(substrmtorm[subid], None)
             # First remove keys in dict
             substreamdict.pop(subid, None)
 
@@ -243,6 +322,7 @@ class MainClass():
         for key,value in wssubdict.items():
             if (len(value)> 0):
                 # Reclassify the demw
+#                print(value)
                 reclassPairs[key] = self.reclassify(key, value)
         
         # Write the information into json files
@@ -293,7 +373,6 @@ class MainClass():
         # be converted to subarea shapefiles.
         # des_classes2 will only be one number for the watershed.
         des_classes2 = []
-
         for subid in range(len(wssubids)):
             src_classes.append("==" + wssubids[subid])
             src_classes_store.append(wssubids[subid])
@@ -327,6 +406,8 @@ class MainClass():
                + '" -r "'
                + des_classes1
                + '" -d 0 -n true']
+#        print(cmd1)
+        
         os.system(cmd1[0])
 
         des_classes2 = ",".join(map(str, des_classes2))
@@ -350,6 +431,7 @@ class MainClass():
                + des_classes2
                + '" -d 0 -n true']
 
+#        print(cmd2)
         os.system(cmd2[0])
 
         return reclasspair
@@ -366,6 +448,7 @@ class MainClass():
         subsinWS = {}
         wsOutlets = {}
         
+        print(fieldOutletSubs)
         # there might be some disruption of numbers, 
         # making the ws no not continuous.
         # I add a counter, ever time, there need to be

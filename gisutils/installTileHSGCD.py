@@ -25,6 +25,7 @@ import copy
 
 fddata = sys.argv[1]
 fvtiledep = sys.argv[2]
+scenariofdname = sys.argv[3]
 
 #fvtiledep = '1.00'
 
@@ -32,7 +33,8 @@ fvtiledep = sys.argv[2]
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scenariofdname
     )
 
 fin_runsubjson = os.path.join(

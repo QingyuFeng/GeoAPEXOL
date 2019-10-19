@@ -22,13 +22,16 @@ require_once("config.php");
 
 
 <!DOCTYPE html>
-<html>
+<html class="no-js">
 
 <head>
 	<title>Geo APEX Online</title>
+    <meta charset='UTF-8'>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="lib/custom/style.css" />
+    <link rel="stylesheet" type="text/css" href="lib/custom/legendcell.css" />
 	<link rel="stylesheet" href="lib/ol.css" type="text/css" />
 	<link rel="stylesheet" href="lib/ol-layerswitcher.css" type="text/css" />
 	<link rel="stylesheet" href="lib/ol-popup.css" type="text/css" />
@@ -42,33 +45,28 @@ require_once("config.php");
 	<script language="javascript" src="lib/proj4-src.js"></script>
 	<script language="Javascript" src="lib/jquery-3.3.1.js"></script>
 
-
 <?php
    
    include('php/olmap.php');
 ?>
 
-
-
-
 </head>
 
+
 <body onload="initol()">
-
-
-    <h2> 
         <?php
         //check for any errors
         if(isset($error)){
-		echo('Error messages: <br>');
+            echo("<h2>");
+            echo('Error messages: <br>');
             	foreach($error as $err){
                 	echo '<p class="bg-danger">'.$err.'</p>';
-            	}
+                }
+            echo("</h2>");
             
         }
         
         ?>
-        </h2>
 
 
 <form method="POST" name="mapserv" action="index.php">
@@ -80,14 +78,13 @@ require_once("config.php");
 <input type="hidden" name="DOWSOT" value="0">
 <input type="hidden" name="JSONOT" value="0">
 <input type="hidden" name="JSO3857" value="0">
-<input type="hidden" name="DOJAPOT" value="0">
-<input type="hidden" name="DORAPOT" value="0">
+
+<input type="hidden" name="EXTENTVIEW" value="0">
+
 
 <input type="hidden" name="DOWSFD" value="0">
 <input type="hidden" name="JSONFD" value="0">
 <input type="hidden" name="JSF3857" value="0">
-<input type="hidden" name="DOJAPFD" value="0">
-<input type="hidden" name="DORAPFD" value="0">
 
 <input type="hidden" name="DORAPEX" value="0">
 <!--Start of zoom control containerr  -->
@@ -95,25 +92,29 @@ require_once("config.php");
 	<table style="width:100%">
 	<!-- First table: zoom to user location-->
     <tr>        
-        <td  <?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?> style="width:100%">
+        <td  <?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?> style="width:100%">
             Zoom to Zip Code or City,State: (Example: 47906 or Pullman,WA) <br>
 <input class="button" type="button" value="Start Over" name="startoverbtn" onClick="javascript:doStartOver();">
         <input type="text" name="ZLOC" id="zoomLocation" onkeypress="javascript:checkEnter(event);" size="50">
 			<input class="button" type="button" value="Go" name="btnZoom" onClick="javascript:doSearch();">
-			</td>
+		</td>
 
-			</tr>
+	</tr>
         
-        <tr>
-            <td style="width:60%" display:inline-block>
-            <div id="tags"></div>
-  			<div id="shortdesc"></div>
-			<div id="map" class="smallmap"></div>
-            </td>              		
-			<td style="width:40%" display:inline-block>
-            <?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) { 
+    <tr>
+        <td <?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"1\" style=\"width:60%\" display:inline-block "; }?> style="width:60%">
+        <div id="tags"></div>
+  		<div id="shortdesc"></div>
+		<div id="map" class="smallmap"></div>
+        </td>              		
+            <?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) { 
+
+            // Appear a new td
+            echo("<td  colspan = \"1\" style=\"width:40%\" display:inline-block>");
+
             // Get the legend file
-        $fdapexoutlay = $workingDir . "/apexoutjsonmap";
+            
+            $fdapexoutlay = $workingDir . "/apexoutjsonmap";
         $fnlgd = $fdapexoutlay . "/susrsltclassesglobal.json";
         $jslgd = json_decode(file_get_contents($fnlgd), true);
 
@@ -129,47 +130,29 @@ require_once("config.php");
             echo("<tr>");
             $rmin = number_format((float)$jslgd["runoff"][$lv]["min"], 0, '.', '');
             $rmax = number_format((float)$jslgd["runoff"][$lv]["max"], 0, '.', '');    
-            $rR1 = 0;
-            $rR2 = 0;
-            $rR3 = 0;
-            $rR1 = $jslgd["runoff"][$lv]["RGB1"];
-            $rR2 = $jslgd["runoff"][$lv]["RGB2"];
-            $rR3 = $jslgd["runoff"][$lv]["RGB3"];
-            echo("<td style=\"width:5%\" display:inline-block bgcolor=\"rgb(".$rR1 . "," . $rR2 . "," . $rR3 . ")\"></td>");
+             
+            $cssid = "rlvl" . $lidx;
+            echo("<td style=\"width:5%\" display:inline-block id= \"".$cssid."\"></td>");
             echo("<td style=\"width:5%\" display:inline-block>" . $rmin. " to " . $rmax . "</td> ");
 
             $emin = number_format((float)$jslgd["soilerosion"][$lv]["min"], 2, '.', '');
             $emax = number_format((float)$jslgd["soilerosion"][$lv]["max"], 2, '.', '');
-            $eR1 = 0;
-            $eR2 = 0;
-            $eR3 = 0;
-            $eR1 = $jslgd["soilerosion"][$lv]["RGB1"];
-            $eR2 = $jslgd["soilerosion"][$lv]["RGB2"];
-            $eR3 = $jslgd["soilerosion"][$lv]["RGB3"];
-            echo("<td style=\"width:5%\" display:inline-block bgcolor=\"rgb(".$eR1 . "," . $eR2 . "," . $eR3 . ")\"></td>");
+            $cssid = "selvl" . $lidx;
+            echo("<td style=\"width:5%\" display:inline-block id= \"".$cssid."\"></td>");
             echo("<td style=\"width:5%\" display:inline-block>" . $emin. " to " . $emax . "</td> ");
 
 
             $nmin = number_format((float)$jslgd["nitrogen"][$lv]["min"], 2, '.', '');
             $nmax = number_format((float)$jslgd["nitrogen"][$lv]["max"], 2, '.', '');
-            $nR1 = 0;
-            $nR2 = 0;
-            $nR3 = 0;
-            $nR1 = $jslgd["nitrogen"][$lv]["RGB1"];
-            $nR2 = $jslgd["nitrogen"][$lv]["RGB2"];
-            $nR3 = $jslgd["nitrogen"][$lv]["RGB3"];
-            echo("<td style=\"width:5%\" display:inline-block bgcolor=\"rgb(".$nR1 . "," . $nR2 . "," . $nR3 . ")\"></td>");
+            $cssid = "nlvl" . $lidx;
+            echo("<td style=\"width:5%\" display:inline-block id= \"".$cssid."\"></td>");
             echo("<td style=\"width:5%\" display:inline-block>" . $nmin. " to " . $nmax . "</td> ");
 
             $pmin = number_format((float)$jslgd["phosphorus"][$lv]["min"], 2, '.', '');
             $pmax = number_format((float)$jslgd["phosphorus"][$lv]["max"], 2, '.', '');
-            $pR1 = 0;
-            $pR2 = 0;
-            $pR3 = 0;
-            $pR1 = $jslgd["phosphorus"][$lv]["RGB1"];
-            $pR2 = $jslgd["phosphorus"][$lv]["RGB2"];
-            $pR3 = $jslgd["phosphorus"][$lv]["RGB3"];
-            echo("<td style=\"width:5%\" display:inline-block bgcolor=\"rgb(".$pR1 . "," . $pR2 . "," . $pR3 . ")\"></td>");
+            
+            $cssid = "plvl" . $lidx;
+            echo("<td style=\"width:5%\" display:inline-block id= \"".$cssid."\"></td>");
             echo("<td style=\"width:5%\" display:inline-block>" . $pmin. " to " . $pmax . "</td> ");
 
             echo("</tr>");
@@ -177,63 +160,56 @@ require_once("config.php");
 
         echo("</table>");
 
-    
+        echo("</td>"); 
         
              } ?>
 
-            </td>					
 			</tr>
 
                 <tr>
-                       <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
+                       <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
                        Critical Source Area (<?=$areaStr?>):&nbsp;<input type="text" name="CRIT" size="10" value=<?=$_SESSION["SSVAR"]["criticalarea"]?>>  <a href="javascript:helpCSA();"><img alt="Help!"  src="/images/help-icon.jpg" /></a>
 Tile drainge depth (<?=$lenStr?>):<input type="text" name="TILED" size="15" value=<?=$_SESSION["SSVAR"]["tiledep"]?>>
                         </td>
                 </tr>
                 <tr>
-                        <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
+                        <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
                                 <p>Simulate a watershed</p>
                         </td>
                 </tr>
                 <tr>
-                        <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
+                        <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
                                <input class="button" type="button" value="Stream Network" name="strnetButton"  <?php if ($_SESSION["SSVAR"]["fldstep"] > 0){ ?> disabled <?php   } ?> onClick="javascript:doStreamNet();">
                                 <input class="button" type="button" value="Set Outlet" name="outletButton"  <?php if ($_SESSION["SSVAR"]["oltstep"] < 1){ ?> disabled <?php   } ?>  onClick="javascript:enableDrawOutlet();">
                                 <input class="button" type="button" value="Get watersheds" name="wsoltButton"   <?php if ($_SESSION["SSVAR"]["oltstep"] < 2){ ?> disabled <?php   } ?>  onClick="javascript:doWatershedOlt();">
-                                <input class="button" type="button" value="Setup APEX Model" name="setAPOltButton" <?php if ($_SESSION["SSVAR"]["oltstep"] < 2){ ?> disabled <?php   } ?> onClick="javascript:setupAPEXOlt();">
-<input class="button" type="button" value="Run APEX Model" name="runAPOltButton" <?php if ($_SESSION["SSVAR"]["oltstep"] < 3){ ?> disabled <?php   } ?> onClick="javascript:runAPEXOlt();">
                         </td>
                 </tr>
 
         <!-- Third Table: Watershed Delineation with field boundary-->
-                        <tr>
-                                <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
-                                        <p>Simulate a Field</p>
-                                </td>
-                        </tr>
-                        <tr>
-                                <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
-                                        <input class="button" type="button" value="Draw a field boundary" name="fldButton"  <?php if ($_SESSION["SSVAR"]["oltstep"] > 0){ ?> disabled <?php   } ?> onClick="javascript:enableDrawBoundary();">
-                                       <input class="button" type="button" value="Get watersheds" name="wsfldbButton"  <?php if ($_SESSION["SSVAR"]["fldstep"] < 1){ ?> disabled <?php   } ?>  onClick="javascript:doWatershedFld();">
-                                        <input class="button" type="button" value="Setup APEX Model" name="setAPFldButton" <?php if ($_SESSION["SSVAR"]["fldstep"] < 1){ ?> disabled <?php   } ?>  onClick="javascript:setupAPEXFld();">
-<input class="button" type="button" value="Run APEX Model" name="runAPFldButton" <?php if ($_SESSION["SSVAR"]["fldstep"] < 2){ ?> disabled <?php   } ?>  onClick="javascript:runAPEXFld();">
+                <tr>
+                    <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
+                         <p>Simulate a Field</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
+                         <input class="button" type="button" value="Draw a field boundary" name="fldButton"  <?php if ($_SESSION["SSVAR"]["oltstep"] > 0){ ?> disabled <?php   } ?> onClick="javascript:enableDrawBoundary();">
+                         <input class="button" type="button" value="Get watersheds" name="wsfldbButton"  <?php if ($_SESSION["SSVAR"]["fldstep"] < 1){ ?> disabled <?php   } ?>  onClick="javascript:doWatershedFld();">
+                    </td>
+               </tr>
 
-                                </td>
-                        </tr>
+                <tr>
+                    <td <?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) {echo " colspan = \"2\""; }?>>
+                    <?php if (($_SESSION["SSVAR"]["fldstep"] > 0) or ($_SESSION["SSVAR"]["oltstep"]> 1)) { ?>
+                    <input type="checkbox" name="scenariolst[]" value="nass2016" checked > NASS 2016
+                    <input type="checkbox" name="scenariolst[]" value="fallow"> Fallow
+                    <input type="checkbox" name="scenariolst[]" value="peregrass"> Perennial Grass
+                    <input type="checkbox" name="scenariolst[]" value="trees"> Tree
+                    <input class="button" type="button" value="Run APEX Model" name="runAPFldButton" onClick="javascript:runAPEX();">            
+                        <?php } ?>
 
-<tr>
-<td <?php if (($_SESSION["SSVAR"]["fldstep"] > 2) or ($_SESSION["SSVAR"]["oltstep"]> 3)) {echo " colspan = \"2\""; }?>>
-<?php if (($_SESSION["SSVAR"]["fldstep"] > 1) or ($_SESSION["SSVAR"]["oltstep"]> 2)) { 
-?>
-<input type="checkbox" name="scenariolst[]" value="nass2016" checked > NASS 2016
-    <input type="checkbox" name="scenariolst[]" value="fallow"> Fallow
-    <input type="checkbox" name="scenariolst[]" value="peregrass"> Perennial Grass
-    <input type="checkbox" name="scenariolst[]" value="trees"> Tree
-<input class="button" type="button" value="Run APEX Model" name="runAPFldButton" onClick="javascript:runAPEX();">            
-<?php } ?>
-
-</td>
-</tr>
+                    </td>
+                </tr>
 
         </table>
 
@@ -249,7 +225,7 @@ Tile drainge depth (<?=$lenStr?>):<input type="text" name="TILED" size="15" valu
 <div id="resulttable" style="display:<?php echo $idsp_fldtb;?>">
 <!-- Start of results for watershed div -->
 <?php
-if ($_SESSION["SSVAR"]["oltstep"] > 3)
+if ($_SESSION["SSVAR"]["oltstep"] > 2)
 {
     // Get the number of subareas
     $totalsubno = count($TBQSNPArray["s1"]["1"]);
@@ -275,7 +251,8 @@ if ($_SESSION["SSVAR"]["oltstep"] > 3)
         for ($subid = 0; $subid <$totalsubno;$subid++){
             $subno = $subid+1;
             $subqsnparray = $TBQSNPArray[$scenkey]["1"];
-            echo("<td style=\"width:5%\">" . $subqsnparray[$subno][0][0] . "</td>");
+            $oltrunoff = number_format($subqsnparray[$subno][0][0], 1, '.', '');
+            echo("<td style=\"width:5%\">" . $oltrunoff . "</td>");
         }
         echo("</tr>");
     }
@@ -303,7 +280,8 @@ if ($_SESSION["SSVAR"]["oltstep"] > 3)
         for ($subid = 0; $subid <$totalsubno;$subid++){
             $subno = $subid+1;
             $subqsnparray = $TBQSNPArray[$scenkey]["1"];
-            echo("<td style=\"width:5%\">" . $subqsnparray[$subno][0][1] . "</td>");
+            $olterosion = number_format($subqsnparray[$subno][0][1], 1, '.', '');
+            echo("<td style=\"width:5%\">" . $olterosion . "</td>");
         }
         echo("</tr>");
     }
@@ -331,7 +309,8 @@ if ($_SESSION["SSVAR"]["oltstep"] > 3)
         for ($subid = 0; $subid <$totalsubno;$subid++){
             $subno = $subid+1;
             $subqsnparray = $TBQSNPArray[$scenkey]["1"];
-            echo("<td style=\"width:5%\">" . $subqsnparray[$subno][0][2] . "</td>");
+            $olttn = number_format($subqsnparray[$subno][0][2], 1, '.', '');
+            echo("<td style=\"width:5%\">" . $olttn . "</td>");
         }
         echo("</tr>");
     }
@@ -359,7 +338,8 @@ if ($_SESSION["SSVAR"]["oltstep"] > 3)
         for ($subid = 0; $subid <$totalsubno;$subid++){
             $subno = $subid+1;
             $subqsnparray = $TBQSNPArray[$scenkey]["1"];
-            echo("<td style=\"width:5%\">" . $subqsnparray[$subno][0][3] . "</td>");
+            $olttp = number_format($subqsnparray[$subno][0][3], 1, '.', '');
+            echo("<td style=\"width:5%\">" . $olttp . "</td>");
         }
         echo("</tr>");
     }
@@ -379,7 +359,7 @@ if ($_SESSION["SSVAR"]["oltstep"] > 3)
 
 <!-- Start of results for field div -->
 <?php
-if ($_SESSION["SSVAR"]["fldstep"] > 2)
+if ($_SESSION["SSVAR"]["fldstep"] > 1)
 {
     echo("<p align=center>Area Weighted Average Annual Values for the field</p>");
     echo("<table>");
@@ -426,6 +406,7 @@ if ($_SESSION["SSVAR"]["fldstep"] > 2)
 <br>
 <br>
 </body>
+
 
 </html>
 

@@ -12,6 +12,48 @@ class apexfuncs
 {
     
 
+    public function copyJSONFILEStoSceFD($workingDir, $scerunfdname)
+    {
+    // runsite.json
+    // var1wsssub.json
+    // wssubsollulatlon.json
+    // runsub.json
+        $srcjsonrunsite = $workingDir . '/apexruns/runsite.json';
+        $destjsonrunsite = $workingDir . '/apexruns/' . $scerunfdname . '/runsite.json'; 
+        if (!copy($srcjsonrunsite,$destjsonrunsite))
+        {
+            addToLog("Error copying runsite.json to the apexrun folder");
+            return false;
+        }
+
+        $srcjsonvar1 = $workingDir . '/apexruns/var1wssub.json';
+        $destjsonvar1 = $workingDir . '/apexruns/' . $scerunfdname . '/var1wssub.json';
+        if (!copy($srcjsonvar1,$destjsonvar1))
+        {
+            addToLog("Error copying var1wssub.json to the apexrun folder");
+            return false;
+        }
+
+        $srcjsonsub = $workingDir . '/apexruns/runsub.json';
+        $destjsonsub = $workingDir . '/apexruns/' . $scerunfdname . '/runsub.json';
+        if (!copy($srcjsonsub,$destjsonsub))
+        {
+            addToLog("Error copying runsub.json to the apexrun folder");
+            return false;
+        }
+
+        $srcjsonwss = $workingDir . '/apexruns/wssubsollulatlon.json';
+        $destjsonwss = $workingDir . '/apexruns/' . $scerunfdname . '/wssubsollulatlon.json';
+        if (!copy($srcjsonwss,$destjsonwss))
+        {
+            addToLog("Error copying wssubsollulatlon.json to the apexrun folder");
+            return false;
+        }
+
+        return TRUE;
+    }
+
+
 
     public function getClimStation($workingDir)
     {
@@ -45,12 +87,12 @@ class apexfuncs
     // of soil, landuse, and slope group as the properties
     // of the subarea.
 
-    public function preAPEXJSONOlt($workingDir) 
+    public function preAPEXJSONOlt($workingDir, $scerunfdname) 
     {
         global $globwebdir;
         addToLog('Copy template var1wssub.json to the apexrun folder');
         $origvar1wssubjson = $globwebdir . 'json/var1wssub.json';
-        $destvar1json = $workingDir . '/apexruns/var1wssub.json';
+        $destvar1json = $workingDir . '/apexruns/'.$scerunfdname .'/var1wssub.json';
         if (!copy($origvar1wssubjson,$destvar1json))
         {
             $error[]="<p>Error copying var1wssub.json to the apexrun folder <p>";
@@ -59,14 +101,14 @@ class apexfuncs
 
         addToLog('Copy template tmpsitefile.json to the apexrun folder');
         $origsitjson = $globwebdir . 'json/tmpsitefile.json';
-        $destsitjson = $workingDir . '/apexruns/tmpsitefile.json';
+        $destsitjson = $workingDir . '/apexruns/'.$scerunfdname .'/tmpsitefile.json';
         if (!copy($origsitjson,$destsitjson))
         {
             $error[]="<p>Error copying tmpsitefile.json to the apexrun folder <p>";
             return false;
         }
         
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/oltprepJSONs.py ". $workingDir . " " . $globwebdir . "apexdata/table_nassmgtupn.csv " . $globwebdir . "apexdata/table_chn.txt " . $globwebdir . "gisutils/utm");
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/oltprepJSONs.py ". $workingDir . " " . $globwebdir . "apexdata/table_nassmgtupn.csv " . $globwebdir . "apexdata/table_chn.txt " . $globwebdir . "gisutils/utm ". $scerunfdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -77,12 +119,12 @@ class apexfuncs
     }
 
 
-    public function preAPEXJSONFld($workingDir)
+    public function preAPEXJSONFld($workingDir, $scerunfdname)
     {
         global $globwebdir;
         addToLog('Copy template var1wssub.json to the apexrun folder');
         $origvar1wssubjson = $globwebdir . 'json/var1wssub.json';
-        $destvar1json = $workingDir . '/apexruns/var1wssub.json';
+        $destvar1json = $workingDir . '/apexruns/'.$scerunfdname .'/var1wssub.json';
         if (!copy($origvar1wssubjson,$destvar1json))
         {
             $error[]="<p>Error copying var1wssub.json to the apexrun folder <p>";
@@ -91,14 +133,14 @@ class apexfuncs
 
         addToLog('Copy template tmpsitefile.json to the apexrun folder');
         $origsitjson = $globwebdir . 'json/tmpsitefile.json';
-        $destsitjson = $workingDir . '/apexruns/tmpsitefile.json';
+        $destsitjson = $workingDir . '/apexruns/'.$scerunfdname .'/tmpsitefile.json';
         if (!copy($origsitjson,$destsitjson))
         {
             $error[]="<p>Error copying tmpsitefile.json to the apexrun folder <p>";
             return false;
         }
 
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/fldprepJSONs.py ". $workingDir . " " . $globwebdir . "apexdata/table_nassmgtupn.csv " . $globwebdir . "apexdata/table_chn.txt " . $globwebdir . "gisutils/utm");
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/fldprepJSONs.py ". $workingDir . " " . $globwebdir . "apexdata/table_nassmgtupn.csv " . $globwebdir . "apexdata/table_chn.txt " . $globwebdir . "gisutils/utm ". $scerunfdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -142,10 +184,10 @@ class apexfuncs
     }
 
 
-    public function writeSOLCOM($workingDir)
+    public function writeSOLCOM($workingDir, $scenario)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSOLCOM.py ". $workingDir);
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSOLCOM.py ". $workingDir . " " . $scenario);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -155,10 +197,10 @@ class apexfuncs
         else{return TRUE;}
     }
 
-    public function writeSOLFile($workingDir)
+    public function writeSOLFile($workingDir, $scenario)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writejson2sol.py ". $workingDir);
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writejson2sol.py ". $workingDir. " " . $scenario);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -169,27 +211,27 @@ class apexfuncs
     }
 
 
-    public function writeSOL($workingDir, $Connection)
+    public function writeSOL($workingDir, $Connection, $scenariofdname)
     {
         global $globwebdir;
         $updatejs = new updatejs();
 
         addToLog('Copy template tmpsolfile.json to the apexrun folder');
         $srcsoljson = $globwebdir . 'json/tmpsolfile.json';
-        $destsoljson = $workingDir . '/apexruns/tmpsolfile.json';
+        $destsoljson = $workingDir . '/apexruns/'. $scenariofdname . '/tmpsolfile.json';
         if (!copy($srcsoljson,$destsoljson))
         {
             $error[]="<p>Error copying tmpsolfile.json to the apexrun folder <p>";
             return false;
         }
         
-        $this->writeSOLCOM($workingDir);
+        $this->writeSOLCOM($workingDir, $scenariofdname);
 
         // Get the unique soil list
         // runsoljson: json contains template for all soil mukeys
         // runsoljson2: array from json
         // runsoljson3: updated array str of soil json from database
-        $fnrunsoljson = $workingDir . '/apexruns/runsol.json';
+        $fnrunsoljson = $workingDir . '/apexruns/'. $scenariofdname . '/runsol.json';
         $runsoljson2 = json_decode(file_get_contents($fnrunsoljson), true);
         $solmklst = array_keys($runsoljson2);
         foreach ($solmklst as $solmk)
@@ -218,17 +260,17 @@ class apexfuncs
         } 
 
         // Write the SOL Files from json:
-        $this->writeSOLFile($workingDir);
+        $this->writeSOLFile($workingDir, $scenariofdname);
 
         return TRUE;    
     
     }
 
 
-    public function writeCLICOMs($workingDir)
+    public function writeCLICOMs($workingDir, $scenariofdname)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeCLICOM.py ". $workingDir . " " . $globwebdir . "gisutils/clinear");
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeCLICOM.py ". $workingDir . " " . $globwebdir . "gisutils/clinear " . $scenariofdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -240,10 +282,10 @@ class apexfuncs
 
 
 
-    public function writeSITFLCOM($workingDir)
+    public function writeSITFLCOM($workingDir, $scenariofdname)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSIT.py ". $workingDir);
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSIT.py ". $workingDir . " " . $scenariofdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -254,10 +296,10 @@ class apexfuncs
     }
 
 
-    public function writeSUBFLCOM($workingDir)
+    public function writeSUBFLCOM($workingDir, $scenariofdname)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSUB.py ". $workingDir);
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeSUB.py ". $workingDir . " " . $scenariofdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -268,20 +310,20 @@ class apexfuncs
     }
 
 
-    public function writeCLIFILEs($workingDir, $Connection)
+    public function writeCLIFILEs($workingDir, $Connection, $scenariofdname)
     {
         global $globwebdir;
         
-        $fnstnjson = $workingDir . '/apexruns/runclistn.json';
+        $fnstnjson = $workingDir . '/apexruns/' . $scenariofdname . '/runclistn.json';
         $stninfo = json_decode(file_get_contents($fnstnjson), true);
         $stabbr = $stninfo[1][0];
         $stnname = $stninfo[1][3];
 
-
         $this->WriteWP1WNDfile($Connection, 
                 $stnname, 
                 $stabbr,
-                $workingDir
+                $workingDir,
+                $scenariofdname
                 );
 
         $dlystartyr = $_SESSION["SSVAR"]["dlystartyr"];
@@ -412,11 +454,12 @@ class apexfuncs
     public function WriteWP1WNDfile($Connection,
                 $stnname,
                 $stabbr, 
-                $workingDir
+                $workingDir,
+                $scenariofdname
                 )
     {
-        $fnwp1 = $workingDir . '/apexruns/' . trim($stnname) . '.WP1';
-        $fnwnd = $workingDir . '/apexruns/' . trim($stnname) . '.WND';
+        $fnwp1 = $workingDir . '/apexruns/'. $scenariofdname . '/' . trim($stnname) . '.WP1';
+        $fnwnd = $workingDir . '/apexruns/'. $scenariofdname . '/' . trim($stnname) . '.WND';
 
         $stnst = substr($stnname, 0, 2);
 		$statelower = strtolower($stnst);
@@ -945,10 +988,10 @@ class apexfuncs
 
 
 
-    public function pywriteCONT($workingDir)
+    public function pywriteCONT($workingDir, $scefdname)
     {
         global $globwebdir;
-        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeCONT.py ". $workingDir);
+        $cmd = escapeshellcmd("/usr/bin/python3 ". $globwebdir . "gisutils/writeCONT.py ". $workingDir . " " .  $scefdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -959,25 +1002,25 @@ class apexfuncs
     }
 
 
-    public function writeCONTFILE($workingDir)
+    public function writeCONTFILE($workingDir, $scefdname)
     {
         global $globwebdir;
         
         $srcctljson = $globwebdir . 'json/tmpcontfile.json';
-        $destctljson = $workingDir . '/apexruns/runcont.json';
+        $destctljson = $workingDir . '/apexruns/' . $scefdname . '/runcont.json';
         if (!copy($srcctljson,$destctljson))
         {
             $error[]="<p>Error copying tmpcontfile.json to the apexrun folder <p>";
             return false;
         }
-        $this->pywriteCONT($workingDir);
+        $this->pywriteCONT($workingDir, $scefdname);
        
         return TRUE;
     }
 
 
 
-    public function copyOTHERFILE($workingDir)
+    public function copyOTHERFILE($workingDir, $scerunfdname)
     {
         global $globwebdir;
 
@@ -1001,7 +1044,7 @@ class apexfuncs
         foreach($file4copy as $f4c)
         {
             $srcfn = $globwebdir . 'apexdata/'. $f4c;  
-            $destfn = $workingDir . '/apexruns/' . $f4c;
+            $destfn = $workingDir . '/apexruns/'. $scerunfdname . '/' . $f4c;
             if(file_exists($destfn))
             {unlink($destfn);}
             
@@ -1015,13 +1058,13 @@ class apexfuncs
 
         // After copying, the permission of apex1501 need to be
         // changed to execute.
-        chmod($workingDir . '/apexruns/'. $file4copy["apex1501"], 0755);
+        chmod($workingDir . '/apexruns/'. $scerunfdname . '/'. $file4copy["apex1501"], 0755);
         return TRUE;
     }
 
 
 
-    public function copyOPSFILE($workingDir)
+    public function copyOPSFILE($workingDir, $scenariofdname)
     {
         global $globwebdir;
         $file4copy = array(
@@ -1041,7 +1084,7 @@ class apexfuncs
         foreach($file4copy as $f4c)
         {
             $srcfn = $globwebdir . 'apexdata/OPSCDFT/'. $f4c;
-            $destfn = $workingDir . '/apexruns/' . $f4c;
+            $destfn = $workingDir . '/apexruns/' . $scenariofdname . '/' . $f4c;
             if(file_exists($destfn))
             {unlink($destfn);}
             if (!copy($srcfn,$destfn))
@@ -1071,10 +1114,10 @@ class apexfuncs
 
 
 
-    public function runAPEX1501($workingDir)
+    public function runAPEX1501($workingDir, $scerunfdname)
     {
         global $globwebdir;
-        $runfd = $workingDir . '/apexruns';
+        $runfd = $workingDir . '/apexruns/'. $scerunfdname;
         
         chdir($runfd); 
         $cmd = escapeshellcmd("./apex1501");
@@ -1131,11 +1174,11 @@ class apexfuncs
 
 
 
-    public function installTile($workingDir, $tiledep)
+    public function installTile($workingDir, $tiledep, $scerunfdname)
     {
         global $globwebdir;
 
-        $cmd = "python3 ".$globwebdir."gisutils/installTileHSGCD.py " . $workingDir . " " . $tiledep;
+        $cmd = "python3 ".$globwebdir."gisutils/installTileHSGCD.py " . $workingDir . " " . $tiledep . " " . $scerunfdname;
         addToLog($cmd);
         exec($cmd, $output, $rc);
         //var_dump($output);
@@ -1155,7 +1198,6 @@ class apexfuncs
         $cmd = "python3 ".$globwebdir."gisutils/fldweightedQSNP.py " . $workingDir;
         addToLog($cmd);
         exec($cmd, $output, $rc);
-        echo($cmd);
         //var_dump($output);
         if ($rc !== 0) {
             $error="<p>***Could not execute: " . $cmd . "***<p>";
@@ -1211,11 +1253,11 @@ class apexfuncs
     }
 
 
-    public function makeScenarioOPCjson($workingDir, $scenario)
+    public function makeScenarioOPCjson($workingDir, $scenariofdname)
     {
         global $globwebdir;
 
-        $cmd = escapeshellcmd("/usr/bin/python3 ".$globwebdir."gisutils/makeSceOPSJSON.py " . $workingDir . " " . $scenario);
+        $cmd = escapeshellcmd("/usr/bin/python3 ".$globwebdir."gisutils/makeSceOPSJSON.py " . $workingDir . " " . $scenariofdname);
         addToLog($cmd);
         exec($cmd, $output, $rc);
         if ($rc !== 0) {

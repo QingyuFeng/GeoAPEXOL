@@ -1,7 +1,7 @@
 {
 	   "model_setup":
 	   {
-	   "yearstorun_nbyr": "30",
+	   "yearstorun_nbyr": "10",
 	   "begin_year_iyr": "1986",
 	   "begin_month_imo": "1",
 	   "begin_day_ida": "1",
@@ -35,9 +35,9 @@
 	   "weather":
 	   {
   	   "weather_in_var_ngn": "0",
-	   "random_seeds_ign": "0",
+	   "random_seeds_ign": "10",
 	   "date_weather_duplicate_igsd": "0",
-	   "pet_method_iet" : "0",
+	   "pet_method_iet" : "1",
 	   "number_generator_seeds_igmx": "0",
 	   "yrs_max_mon_rainfall_ywi": "10.00",
 	   "wetdry_prob_bta": "0.75",
@@ -49,7 +49,7 @@
 	   "runoff_sim":
 	   {
 	   "stochastic_cn_code_iscn": "0",
-	   "peak_rate_method_ityp": "-1",
+	   "peak_rate_method_ityp": "0",
 	   "non_varying_cn_nvcn": "4",
 	   "runoff_method_infl": "0",
 	   "field_capacity_wilting_isw": "0",

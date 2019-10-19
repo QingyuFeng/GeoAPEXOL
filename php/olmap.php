@@ -19,7 +19,7 @@ $taudemMap = $globWorkRoot . session_id() . "/taudem.map";
 $apexMap = $globWorkRoot . session_id() . "/apex.map";
 
 $workingDir = $globWorkRoot . session_id();
-echo('<br> Session ID: '.session_id(). '<br>');
+//echo('<br> Session ID: '.session_id(). '<br>');
 
 
 //Set working directory
@@ -67,23 +67,34 @@ if (isset($_POST['ZLOC']))
 
 if (($len > 0) && (strcmp($_SESSION["SSVAR"]["izoom"], "1") == 0))
 {
+    // Reset error flag to be 0
+    $_SESSION["SSVAR"]["ierrstep"] = 0;
+
+    // The latitude longitude was following the WGS84 coordinate system.
     $arr = $genefuncs->doZoom($zoomLocation,
         $_SESSION["SSVAR"]["latitude"],
         $_SESSION["SSVAR"]["longitude"]);
     $_SESSION["SSVAR"]["latitude"] = $arr[0];
     $_SESSION["SSVAR"]["longitude"] = $arr[1];
+    $_SESSION["SSVAR"]["errlocfound"] = $arr[2];
+    $_SESSION["SSVAR"]["ilocfound"] = $arr[3];
 
-    $yll = $_SESSION["SSVAR"]["latitude"] - 0.1;
-    $xll = $_SESSION["SSVAR"]["longitude"] - 0.1;
-    $yur = $_SESSION["SSVAR"]["latitude"] + 0.1;
-    $xur = $_SESSION["SSVAR"]["longitude"] + 0.1;
-    $_SESSION["SSVAR"]["extent"] = $xll . "," . $yll . "," . $xur . "," . $yur;
-
+    if($_SESSION["SSVAR"]["ilocfound"] == 1){
+        $yll = $_SESSION["SSVAR"]["latitude"] - 0.1;
+        $xll = $_SESSION["SSVAR"]["longitude"] - 0.1;
+        $yur = $_SESSION["SSVAR"]["latitude"] + 0.1;
+        $xur = $_SESSION["SSVAR"]["longitude"] + 0.1;
+        $_SESSION["SSVAR"]["extent"] = $xll . "," . $yll . "," . $xur . "," . $yur;
+    }
+        $_SESSION["SSVAR"]["extentview"] = $_SESSION["SSVAR"]["extent"];
     // After zoom, reset izoom to 0 to prevent rerunning the function.
     // and redirect the page to prevent resubmitting the form.
     $_SESSION["SSVAR"]["izoom"] = "0";
+
     header("Location: index.php");
 }
+
+
 
 // The next operation is to start over
 if ((isset($_POST['DOSTVR']) && (strcmp($_POST["DOSTVR"], "1") == 0)))
@@ -100,21 +111,35 @@ if ((isset($_POST['DOSTVR']) && (strcmp($_POST["DOSTVR"], "1") == 0)))
 // Then work on do stream network for olt 
 if ((isset($_POST['DOSTRM']) && (strcmp($_POST["DOSTRM"], "1") == 0)))
 {
+    // Reset error flag to be 0
+    $_SESSION["SSVAR"]["ierrstep"] = 0;
+
     if (isset($_POST['EXTENT']))
     {
         $_SESSION["SSVAR"]["extent"] = urldecode($_POST["EXTENT"]);
     } 
+    
+    if (isset($_POST['EXTENTVIEW']))
+    {
+        $_SESSION["SSVAR"]["extentview"] = urldecode($_POST["EXTENTVIEW"]);
+    }
+
     // Call an additional php file
     include("dosnolt.php"); 
+    
     // Update steps value for map showing
     $_SESSION["SSVAR"]["oltstep"] = 1;
     // and redirect the page to prevent resubmitting the form.
-    header("Location: index.php");
+    //header("Location: index.php");
 }
+
 
 // Then work on do watershed with olt
 if ((isset($_POST['DOWSOT']) && (strcmp($_POST["DOWSOT"], "1") == 0)))
 {
+    // Reset error flag to be 0
+    $_SESSION["SSVAR"]["ierrstep"] = 0;
+
     if (isset($_POST['JSONOT']))
     {
         $_SESSION["SSVAR"]["jsot"] = urldecode($_POST["JSONOT"]);
@@ -126,34 +151,17 @@ if ((isset($_POST['DOWSOT']) && (strcmp($_POST["DOWSOT"], "1") == 0)))
     }
     // Call an additional php file
     include("dowsolt.php");
+
+    if (isset($_POST['EXTENTVIEW']))
+    {
+        $_SESSION["SSVAR"]["extentview"] = urldecode($_POST["EXTENTVIEW"]);
+    }
+
+
     // Update steps value for map showing
     $_SESSION["SSVAR"]["oltstep"] = 2;
     // and redirect the page to prevent resubmitting the form.
     header("Location: index.php");
-}
-
-// Then setup apex model: basically transfer information into json. 
-if ((isset($_POST['DOJAPOT']) && (strcmp($_POST["DOJAPOT"], "1") == 0)))
-{
-    // Call an additional php file
-    include("dosetapexolt.php");
-    // Update steps value for map showing
-    $_SESSION["SSVAR"]["oltstep"] = 3;
-    // and redirect the page to prevent resubmitting the form.
-    //header("Location: index.php");
-}
-
-// Then run apex model convert json into apex input files, run
-// the model and generate maps from output.
-if ((isset($_POST['DORAPOT']) && (strcmp($_POST["DORAPOT"], "1") == 0)))
-{
-    // Call an additional php file
-    include("runapexolt.php");
-
-    // Update steps value for map showing
-    $_SESSION["SSVAR"]["oltstep"] = 4;
-    // and redirect the page to prevent resubmitting the form.
-    //header("Location: index.php");
 }
 
 
@@ -161,10 +169,18 @@ if ((isset($_POST['DORAPOT']) && (strcmp($_POST["DORAPOT"], "1") == 0)))
 // Steps for processing Field Runs
 if ((isset($_POST['DOWSFD']) && (strcmp($_POST["DOWSFD"], "1") == 0)))
 {
+    // Reset error flag to be 0
+    $_SESSION["SSVAR"]["ierrstep"] = 0;
+    
     if (isset($_POST['EXTENT']))
     {
         $_SESSION["SSVAR"]["extent"] = urldecode($_POST["EXTENT"]);
     }
+    if (isset($_POST['EXTENTVIEW']))
+    {
+        $_SESSION["SSVAR"]["extentview"] = urldecode($_POST["EXTENTVIEW"]);
+    }
+
     if (isset($_POST['JSONFD']))
     {
         $_SESSION["SSVAR"]["jsfd"] = urldecode($_POST["JSONFD"]);
@@ -177,82 +193,75 @@ if ((isset($_POST['DOWSFD']) && (strcmp($_POST["DOWSFD"], "1") == 0)))
 
     // Call an additional php file
     include("dowsfld.php");
+
+    if ($_SESSION["SSVAR"]["ierrstep"] == 1){
+        return;
+    }
+
     // Update steps value for map showing
     $_SESSION["SSVAR"]["fldstep"] = 1;
     // and redirect the page to prevent resubmitting the form.
     //header("Location: index.php");
 }
 
-// Then setup apex model: basically transfer information into json.
-if ((isset($_POST['DOJAPFD']) && (strcmp($_POST["DOJAPFD"], "1") == 0)))
-{
-    // Call an additional php file
-    include("dosetapexfld.php");
-    // Update steps value for map showing
-    $_SESSION["SSVAR"]["fldstep"] = 2;
-    // and redirect the page to prevent resubmitting the form.
-    //header("Location: index.php");
-}
-
-// Then setup apex model: basically transfer information into json.
-if ((isset($_POST['DORAPFD']) && (strcmp($_POST["DORAPFD"], "1") == 0)))
-{
-    // Call an additional php file
-    include("runapexfld.php");
-    // Update steps value for map showing
-    $_SESSION["SSVAR"]["fldstep"] = 3;
-    // and redirect the page to prevent resubmitting the form.
-//    header("Location: index.php");
-}
 
 // Then setup apex model: basically transfer information into json.
 if ((isset($_POST['DORAPEX']) && (strcmp($_POST["DORAPEX"], "1") == 0)))
 {
-    // Every time entered here, we first check whether one 
-    // run existed. The reason was to decrease the repeating 
-    // steps of writing and copying files.
-    // Check whether this is a new run or not
-    if ($_SESSION["SSVAR"]["inewapexrun"] == 0)
+    // Reset error flag to be 0
+    $_SESSION["SSVAR"]["ierrstep"] = 0;
+
+
+    if (isset($_POST['EXTENTVIEW']))
     {
-        // Indicating this is a new run, run prepare files
-        include('runapexp1.php');
+        $_SESSION["SSVAR"]["extentview"] = urldecode($_POST["EXTENTVIEW"]);
     }
 
     // Then modify the session scenario variable
+    // every time, reset the scenario to the default, which is the nass2016
+    $_SESSION["SSVAR"]["runscenario"] = $_SESSION["SSVAR"]["runscenario_dft"];
     if(!empty($_POST['scenariolst'])) {
-        $_SESSION["SSVAR"]["runscenario"] = array();
         foreach($_POST['scenariolst'] as $idx=>$scenro) {
-            $seskey = 's'. (string)($idx+1);
-            $seskey_f = 's'. (string)($idx+1).'_full';
-            $_SESSION["SSVAR"]["runscenario"][$seskey] = $scenro;
-            $_SESSION["SSVAR"]["runscenario"][$seskey_f] = $scenro; 
+            // check whether the scenario has been runed, if so
+            // do not add again.
+            // skip the default
+            if (! in_array($scenro, $_SESSION["SSVAR"]["runscenario"]))
+            { 
+                $seskey = 's'. (string)($idx+1);
+                $seskey_f = 's'. (string)($idx+1).'_full';
+                $_SESSION["SSVAR"]["runscenario"][$seskey] = $scenro;
+                $_SESSION["SSVAR"]["runscenario"][$seskey_f] = $scenro; 
+            }
+        
         }
     } 
 
+    // Every time entered here, we first check whether one
+    // run existed. The reason was to decrease the repeating
+    // steps of writing and copying files.
+    // Check whether this is a new run or not
+    // Indicating this is a new run, run prepare files
+    //include('runapexp1.php');
+
     // Check which routine to run: olt or fld
-    if ($_SESSION["SSVAR"]["fldstep"] > 1)
+    if ($_SESSION["SSVAR"]["fldstep"] > 0)
     {
         // Run fld steps
         $TBQSNPArray = array();
         include('runapexfldp2.php');
         // Update steps value for map showing
-        $_SESSION["SSVAR"]["fldstep"] = 3;
+        $_SESSION["SSVAR"]["fldstep"] = 2;
     }
-    else if ($_SESSION["SSVAR"]["oltstep"] > 2)
+    else if ($_SESSION["SSVAR"]["oltstep"] > 1)
     {
         // Run olt steps
         $TBQSNPArray = array();
         include('runapexoltp2.php');
         // Update steps value for map showing
-        $_SESSION["SSVAR"]["oltstep"] = 4;
+        $_SESSION["SSVAR"]["oltstep"] = 3;
 
 
     }
-
-
-
-
-
 
     $_SESSION["SSVAR"]["inewapexrun"] = 1;
 
@@ -357,6 +366,10 @@ function doStreamNet()
     var bx = nt;
     var zoom = map.getView().getZoom();
 
+    // Add a new variable to control the view extent
+    var viewext = map.getView().calculateExtent();
+    var viewext4326 = ol.proj.transformExtent(viewext,src,"EPSG:4326");
+
     if ((wid > 0.30) || (hgt > 0.30)) {
         areaTooLarge(wid,hgt);
     }
@@ -373,6 +386,7 @@ function doStreamNet()
             // If everything is good, modify the document values and then submit the form.
             document.mapserv.DOSTRM.value = "1";
             document.mapserv.EXTENT.value = escape(bx);
+            document.mapserv.EXTENTVIEW.value = escape(viewext4326);
             document.mapserv.submit();            
         }
     }
@@ -413,56 +427,79 @@ function initol()
     //setOverlaysOpen(); 
 
     // Setup  layers of each step
-    <?php if ($_SESSION["SSVAR"]["oltstep"] > 0) { ?>
-    setOltStep1Layers();       // Channel delineation complete, network layer available
+    <?php if ($_SESSION["SSVAR"]["oltstep"] == 1) { ?>
+        setOltStep1Layers();       // Channel delineation complete, network layer available
+        alert("Stream netwotk generation completed!");
     <?php } ?>
 
-    <?php if ($_SESSION["SSVAR"]["oltstep"] > 1) { ?>
-    setOltStep2Layers();       // Channel delineation complete, network layer available
+    <?php if ($_SESSION["SSVAR"]["oltstep"] == 2) { ?>
+        setOltStep1Layers();
+        setOltStep2Layers();       // watershed delineation complete, watershed layer available
+        alert("Watershed delineation completed!");
     <?php } ?>
 
-    <?php if ($_SESSION["SSVAR"]["oltstep"] > 3) { ?>
-    var scenarioarr = JSON.parse('<?= json_encode($_SESSION["SSVAR"]["runscenario"])?>');
-    setOltStep4Layers(scenarioarr);       // Channel delineation complete, network layer available
+    <?php if ($_SESSION["SSVAR"]["oltstep"] == 3) { ?>
+        setOltStep1Layers();
+        setOltStep2Layers(); 
+        var scenarioarr = JSON.parse('<?= json_encode($_SESSION["SSVAR"]["runscenario"])?>');
+        setOltStep4Layers(scenarioarr);       // apex run completed
+        alert("Apex running completed!");
     <?php } ?>
 
-    <?php if ($_SESSION["SSVAR"]["fldstep"] > 0) { ?>
-    var wsnoinfld = '<?=$_SESSION["SSVAR"]["fldwsno"]?>';
-    setFldStep1Layers(wsnoinfld);       // Channel delineation complete, network layer available
+    <?php if ($_SESSION["SSVAR"]["fldstep"] == 1) { ?>
+        var wsnoinfld = '<?=$_SESSION["SSVAR"]["fldwsno"]?>';
+        setFldStep1Layers(wsnoinfld);       // watershed delineation complete, network layer available
+        alert("Watershed delineation completed!");
+
     <?php } ?>
 
     //Then add the results for the field boundary 
-    <?php if ($_SESSION["SSVAR"]["fldstep"] > 2) { ?>
-    var scenarioarr = JSON.parse('<?= json_encode($_SESSION["SSVAR"]["runscenario"])?>');
-    setFldStep3Layers_fldqsnpmap(scenarioarr);       // Channel delineation complete, network layer available
+    <?php if ($_SESSION["SSVAR"]["fldstep"] == 2) { ?>
+        var wsnoinfld = '<?=$_SESSION["SSVAR"]["fldwsno"]?>';
+        setFldStep1Layers(wsnoinfld);       // apex setup completed
+
+        var scenarioarr = JSON.parse('<?= json_encode($_SESSION["SSVAR"]["runscenario"])?>');
+        setFldStep3Layers_fldqsnpmap(scenarioarr);       // setup and run finished
+        alert("Apex running completed!");
     <?php } ?>
 
 
 
 
-    <?php if (( $_SESSION["SSVAR"]["extent"]== 0) && ($_SESSION["SSVAR"]["izoom"]== "0")) { ?>
-    map.zoomToMaxExtent();
-    <?php } else { ?>
-    //alert("extent:" + "<?=$_SESSION["SSVAR"]["extent"]?>");
-    var extent = "<?=$_SESSION["SSVAR"]["extent"]?>";
-    var exts = extent.split(',');
-    //alert(exts[0]);alert(exts[1]);alert(exts[2]);alert(exts[3]);
-    exts[0] = parseFloat(exts[0]);
-    exts[1] = parseFloat(exts[1]);
-    exts[2] = parseFloat(exts[2]);
-    exts[3] = parseFloat(exts[3]);
-
-    var coordMin = ol.proj.fromLonLat([exts[0],exts[1]], 'EPSG:3857');
-    //alert(coordMin);
-    var coordMax = ol.proj.fromLonLat([exts[2],exts[3]], 'EPSG:3857');
-    var extent = [coordMin[0],coordMin[1],coordMax[0],coordMax[1]];
-    //alert("newextent:" + extent);
-    map.getView().fit(extent , map.getSize());
-    //bounds = new OpenLayers.Bounds(<?=$extent?>);
-    //bounds.transform(new OpenLayers.Projection("EPSG:4326"),
-    // map.getProjectionObject());
-    // map.zoomToExtent(bounds,true);
+    <?php if ($_SESSION["SSVAR"]["extentview"] !== 0) { ?>
+        
+        //alert("extent:" + "<?=$_SESSION["SSVAR"]["extent"]?>");
+        var extent = "<?=$_SESSION["SSVAR"]["extentview"]?>";
+        var exts = extent.split(',');
+        //alert(exts[0]);alert(exts[1]);alert(exts[2]);alert(exts[3]);
+        exts[0] = parseFloat(exts[0]);
+        exts[1] = parseFloat(exts[1]);
+        exts[2] = parseFloat(exts[2]);
+        exts[3] = parseFloat(exts[3]);
+        //alert(extent);
+        var coordMin = ol.proj.fromLonLat([exts[0],exts[1]], 'EPSG:3857');
+        //alert(coordMin);
+        var coordMax = ol.proj.fromLonLat([exts[2],exts[3]], 'EPSG:3857');
+        var extent = [coordMin[0],coordMin[1],coordMax[0],coordMax[1]];
+        map.getView().fit(extent , map.getSize());
+        //bounds = new OpenLayers.Bounds(<?=$extent?>);
+        //bounds.transform(new OpenLayers.Projection("EPSG:4326"),
+        // map.getProjectionObject());
+        // map.zoomToExtent(bounds,true);
     <?php } ?>
+
+    // Comfirm processes or show error
+    <?php if ($_SESSION["SSVAR"]["ilocfound"] == 0) { ?>    
+        alert("<?=$_SESSION["SSVAR"]["errlocfound"]?>");
+
+    <?php } ?>
+
+    // after processing, if error, return
+    <?php if ($_SESSION["SSVAR"]["ierrstep"] == 1) { ?>
+        alert("<?=$_SESSION["SSVAR"]["msgerrstep"]?>");
+
+    <?php } ?>
+
 
 }    
 
@@ -847,28 +884,21 @@ function gotoSubcatchmentOlt(code, proj4def){
     var features = srcDrawOlt.getFeatures();
     var jsonutm = format.writeFeatures(features,{dataProjection: newProjCode,
                                           featureProjection: 'EPSG:3857'});
+    
+   // // Add a new variable to control the view extent
+    var src  = map.getView().getProjection().getCode();
+    var viewext = map.getView().calculateExtent();
+    var viewext4326 = ol.proj.transformExtent(viewext,src,"EPSG:4326");
 
     var json3857 = format.writeFeatures(features); 
     // If everything is good, modify the document values and then submit the form.
+    document.mapserv.EXTENTVIEW.value = escape(viewext4326);
     document.mapserv.DOWSOT.value = "1";
     document.mapserv.JSONOT.value = escape(jsonutm);
     document.mapserv.JSO3857.value = escape(json3857);
     document.mapserv.submit();
 }
 
-
-
-// Setup APEX model for watershed delineated with outlet
-function setupAPEXOlt(){
-    document.mapserv.DOJAPOT.value = "1";
-    document.mapserv.submit();
-}
-
-// Run APEX model for watershed delineated with outlet
-function runAPEXOlt(){
-    document.mapserv.DORAPOT.value = "1";
-    document.mapserv.submit();
-}
 
 
 //
@@ -1160,6 +1190,10 @@ function gotoWSFld(code, proj4def){
     var boxheight = ol.extent.getHeight(fldext4326);
     var box = fldext4326;
 
+    // Add a new variable to control the view extent
+    var viewext = map.getView().calculateExtent();
+    var viewext4326 = ol.proj.transformExtent(viewext,src,"EPSG:4326");
+
     var boxwidth025 = boxwidth + 0.025;
     var boxheight025 = boxheight + 0.025;
     //alert('height: ' + boxheight + 'height025' + boxheight025);   
@@ -1178,6 +1212,7 @@ function gotoWSFld(code, proj4def){
         {   
             document.mapserv.DOWSFD.value = "1";
             document.mapserv.EXTENT.value = escape(fldext4326);
+            document.mapserv.EXTENTVIEW.value = escape(viewext4326);
             document.mapserv.JSONFD.value = escape(jsonutm);
             document.mapserv.JSF3857.value = escape(json3857);
             document.mapserv.submit();
@@ -1438,21 +1473,15 @@ function setFldStep3Layers_fldqsnpmap(scenarioarr)
 
 
 
-
-// Setup APEX model for watershed delineated with outlet
-function setupAPEXFld(){
-    document.mapserv.DOJAPFD.value = "1";
-    document.mapserv.submit();
-}
-
-// Run APEX model for watershed delineated with outlet
-function runAPEXFld(){
-    document.mapserv.DORAPFD.value = "1";
-    document.mapserv.submit();
-}
-
 // Run APEX model for watershed delineated with outlet
 function runAPEX(){
+
+    // Add a new variable to control the view extent
+    var src  = map.getView().getProjection().getCode();
+    var viewext = map.getView().calculateExtent();
+    var viewext4326 = ol.proj.transformExtent(viewext,src,"EPSG:4326");
+    document.mapserv.EXTENTVIEW.value = escape(viewext4326);
+
     document.mapserv.DORAPEX.value = "1";
     document.mapserv.submit();
 }

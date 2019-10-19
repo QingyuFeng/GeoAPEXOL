@@ -132,7 +132,6 @@ class gdalfuncs
 
         sscanf($imgext, "%f %f %f %f", $XLL, $YLL, $XUR, $YUR);
         $projwin = $XLL . " " . $YUR . " " . $XUR . " " . $YLL;
-
         $cmd = $globPythonBin . "gdal_merge.py -o " . $workingDir . "/gislayers/slice_ned.tif -ul_lr " . $projwin . " " . $allnedfiles;
 
         addToLog("<br>" . $cmd . "<br>");
@@ -171,7 +170,7 @@ class gdalfuncs
         $proj = "'+proj=utm +zone=" . $zone . " +datum=NAD83 +ellps=GRS80' ";
         if ($hasProj == FALSE)
         {$proj = $proj . "-s_srs '+proj=latlong +datum=NAD83 +ellps=GRS80' "; }
-        $cmd = "gdalwarp -t_srs " . $proj . "-tr 30 30 -r bilinear -dstnodata -999999 " . $sliceFile . " " . $utmSliceFile;
+        $cmd = "gdalwarp -t_srs " . $proj . "-tr 30 30 -r near -dstnodata -999999 " . $sliceFile . " " . $utmSliceFile;
         addToLog($cmd);
         addToLog("\n");
         exec($cmd, $output, $rc);
@@ -183,7 +182,10 @@ class gdalfuncs
     }
 
 
-    public function extractNASS($workingDir,$imgext, $utmzone)
+    // This function was moved to lufuncs.php. It was not used anymore since I reprojected the
+    // land use (nass2016)map to the same as the DEM and we do not to reproject
+    // the map to and back from alber
+    public function extractNASS_oldnotused($workingDir,$imgext, $utmzone)
     {
         global $globgisdir;
 
@@ -196,7 +198,7 @@ class gdalfuncs
         $albersProj = "'+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23.0 +lon_0=-96.0 +x_0=0.0 +y_0=0.0 +units=m +datum=NAD83 +ellps=GRS80 +no_defs '";
 
         sscanf($imgext, "%f %f %f %f", $XLL, $YLL, $XUR, $YUR);
-    $XLL2 = $XLL;
+        $XLL2 = $XLL;
         $XUR2 = $XUR;
 
         // Write a coords for
@@ -215,6 +217,7 @@ class gdalfuncs
         $lucoordsalb = $workingDir.'/landuse/coordsalb.txt';
 
         $cmd = "gdaltransform -s_srs epsg:4326 -t_srs " . $albersProj . " < " . $lucoords . " > " . $lucoordsalb;
+
 
         exec($cmd, $output, $rc);
         if ($rc !== 0) {
@@ -683,7 +686,7 @@ class gdalfuncs
         $this->convTif2Asc($lu,$luasc);
 
         // Convert soil tif to asc file.
-        $soilgrid = $workingDir.'/soils/soilgrid.tif';
+        $soilgrid = $workingDir.'/soils/soilutmdemwext.tif';
         $soilgridasc = $workingDir.'/soils/soil.asc';
         if (file_exists($soilgridasc))
         {unlink($soilgridasc); }

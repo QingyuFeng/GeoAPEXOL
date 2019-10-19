@@ -51,12 +51,14 @@ import json
 # Input and output file defining
 #######################################################
 fddata = sys.argv[1]
+scefdname = sys.argv[2]
 
 #fddata = 'devfld'
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scefdname
     )
 
 fin_sitejson = os.path.join(

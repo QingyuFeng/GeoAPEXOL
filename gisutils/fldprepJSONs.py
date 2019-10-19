@@ -52,6 +52,11 @@ In this program, the subarea land use number and soil number
 will be the dominant combination of soil-landuse-slope.
 This can be modified later if needed.
 
+Updated on Oct 1, 2019
+This script was modified to consider the scenarios (different 
+land use types) before the manning n and lun numbers were
+determined. The original script only determine these values
+based on nass2016 and this is not correct.
 
 @author: qyfen
 """
@@ -76,7 +81,7 @@ fddata = sys.argv[1]
 fin_nassmgtupn = sys.argv[2]
 fin_chn = sys.argv[3]
 utmfd =  sys.argv[4]
-
+scenariofdname = sys.argv[5]
 
 from utm.conversion import to_latlon, from_latlon, latlon_to_zone_number, latitude_to_zone_letter
 from utm.error import OutOfRangeError
@@ -152,12 +157,14 @@ fin_lu = os.path.join(
 fin_wssubjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'var1wssub.json'
     )
 
 fin_tmpsitjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'tmpsitefile.json'
     ) 
 
@@ -180,21 +187,23 @@ fin_demwreclasspair = os.path.join(
 fout_wssubvarjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'runsub.json'
     )
 
 fout_wssubsollujson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'wssubsollulatlon.json'
     )
 
 fout_sitejson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'runsite.json'
     )
-
 
 
 #######################################################
@@ -209,7 +218,7 @@ class InfoFromFiles():
         # Future reference
         self.slopeGroup = [0, 2, 5, 9999]
 
-        # A temporary to store the classes of each watershed 
+        # A temporary to store the classes of each watershed
         self.wsSubinfoClasses = {}
         # A continuous counter starting from subarea 1 to watershed
         # 1, to the last one. This will be used to write the list files.
@@ -225,13 +234,13 @@ class InfoFromFiles():
         # in the wssubfld. Each line contains the subareas
         # in one watershed covered by the field.
         self.wssubflddict = self.readWsSubFlds(fin_demwreclasspair)
-        
+
         # For the purpose of matching demw and new reclassif
-        # sub nos, the dict is processed to a new format 
+        # sub nos, the dict is processed to a new format
         # with nested dict: ws_key1, subdemw_key2:subrecno_value.
         self.wssubflddict2 = self.modifywssubdict(
-                self.wssubflddict)        
-        
+                self.wssubflddict)
+
         # Read in asc data for later processing
         self.dtsubno = self.readASCstr(fin_demw)
         self.dtslp = self.readASCfloat(fin_slp)
@@ -249,9 +258,13 @@ class InfoFromFiles():
         self.dfasc['plen'] = self.dtplen[3]
         self.dfasc['soilid'] = self.dtsol[3]
         self.dfasc['luid'] = self.dtlu[3]
-        self.dfasc['strm01'] = self.dtstrmasc[3] 
+        self.dfasc['strm01'] = self.dtstrmasc[3]
         self.dfasc['elev'] = self.dtelev[3]
 
+        self.uniqluno = self.dfasc['luid'].unique()
+
+#        for idl in self.uniqluno:
+#            print(idl)
 
         ## Start processing the dataframe for various variables
         ## Subarea no
@@ -261,15 +274,16 @@ class InfoFromFiles():
         self.dfasc = self.dfasc.drop(self.dfasc[
                 self.dfasc.subno == self.dtsubno[2]].index)
 
-        self.uniqsubno = self.dfasc['subno'].unique()    
-    
+        self.uniqsubno = self.dfasc['subno'].unique()
+
+
         # In order to remove the potential problems of having
         # to simulate water, I will need to remove those land
         # uses that are water.
         self.waterlus = list(map(str, [83,87,92,111,112,190,195]))
         self.nodatalus = list(map(str, [0,81,88]))
         # ~ turn True to False
-        
+
         # This may cause some issue where water are a lot.
         # I will add another calculation to get the percent
         # of water area, which will be treated as ponds.
@@ -283,21 +297,117 @@ class InfoFromFiles():
         # and other useful information
         self.strmAtt = self.readSHP(fin_streamshp)
 
+#        for k, v in self.strmAtt.items():
+#            print(k,v)
+
         # treedict: a dictionary storing the connection among
         # different subareas, including downstream, upstream,
         # stream order, etc.
         self.treedict = self.readsubtree(
                     fin_tree)
-        
+
         # Either the streamAtt or the tree file has some problem
         # of having numbers that does not exist in the demw.
         # All the attributes of subareas area processed using
         # stream number in the demw file. So, I need to process
         # the missing numbers in demw but existing in streamAtt
-        # or tree file. 
-        self.treedict2 = self.rmExtraStrm(self.uniqsubno, 
-                                         self.treedict)        
-        
+        # or tree file.
+        self.treedict2 = self.rmExtraStrm(self.uniqsubno,
+                                         self.treedict)
+
+        # A graph representing the subareas
+        self.watershedGraph = self.graphForWS(
+            self.treedict2)
+
+#        for k, v in self.treedict2.items():
+#            print(k, v)
+
+        # Deal with the 0 values in soil and land use
+#        print(self.dfasc['soilid'].value_counts().idxmax())
+#        print(self.dfasc['luid'].value_counts().idxmax())
+#        print(self.dfasc['slope'].value_counts().idxmax())
+        # Mocify the 0 values or water to the most frequent values in
+        # soil
+        # 1. Get unique values of the soil list
+        self.uniqsoils = self.dfasc['soilid'].unique()
+
+        if ("0" in self.uniqsoils):
+            # Find the most frequent soil ids in the soil list(This should
+            # not be 0)
+            self.mostsoilid = self.dfasc['soilid'].value_counts().idxmax()
+            if (self.mostsoilid == '0') or (self.mostsoilid == '1'):
+                self.mostsoilid = "164331"
+            # Create an np array to be added in the pandas to replace the 0s
+            # with the most soil id
+            self.mostsoilarray = np.array([self.mostsoilid] * len(self.dfasc[self.dfasc['soilid'] == '0']))
+
+            # Modify
+            self.dfasc.loc[self.dfasc['soilid'] == '0', "soilid"] = self.mostsoilarray
+
+        # Deal with land use
+        # If there is water or other unwanted land use
+        # Mocify the 0 values or water to the most frequent values in
+        # landuse
+        # 1. Get unique values of the soil list
+        self.uniqlus = self.dfasc['luid'].unique()
+        for luuid in self.uniqlus:
+            if (luuid in self.waterlus):
+#                print(len(self.dfasc[self.dfasc['luid'] == luuid]))
+                # Find the most frequent soil ids in the soil list(This should
+                # not be 0)
+                self.mostluid = self.dfasc['luid'].value_counts().idxmax()
+
+                if self.mostluid in self.waterlus:
+                    self.mostluid = "1"
+                # Create an np array to be added in the pandas to replace the 0s
+                # with the most soil id
+                self.mostluarray = np.array([self.mostluid] * len(self.dfasc[self.dfasc['luid'] == luuid]))
+
+#                print(self.dfasc.loc[self.dfasc['luid'] == luuid, "luid"])
+
+                # Modify
+                self.dfasc.loc[self.dfasc['luid'] == luuid, "luid"] = self.mostluarray
+#                print(self.dfasc.loc[self.dfasc['luid'] == luuid, "luid"])
+
+
+
+        # based on the intended scenario, the lu column will be modified to the
+        # intended scenario
+        self.mostluarray = np.array([self.mostluid] * len(self.dfasc[self.dfasc['luid'] == luuid])) 
+
+        self.scenarioname = None
+        self.scenariono = None
+        self.scenarioname = scenariofdname[3:]
+         
+        if (self.scenarioname == "fallow"):
+            self.scenariono = "65"
+            # Create an array of the length of the dataframe 
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+        elif (self.scenarioname == "trees"):
+            self.scenariono = "141"
+            # Create an array of the length of the dataframe
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+        elif (self.scenarioname == "peregrass"):
+            self.scenariono = "176"
+            # Create an array of the length of the dataframe
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+
+        print(self.dfasc['luid'])
 
         # Add a slopeGroup For processing
         self.dfasc['slopeGroup'] = self.dfasc['slope'].apply(
@@ -307,7 +417,7 @@ class InfoFromFiles():
         self.dfasc['subCropSoilSlope'] = self.dfasc.apply(
                                         self.addCropSoilSlope,
                                         axis=1)
-        
+
         # Calculate average dem/elevation for the subarea
         self.avgElev = self.dfasc.groupby('subno')[
                 'elev'].mean().to_dict()
@@ -325,7 +435,7 @@ class InfoFromFiles():
         # in a subarea with the maximum area
         self.subCSSCountsMax = self.subCSSCounts.to_frame()
 
-        
+
         self.subCSSCountsMax['comb'] = self.subCSSCountsMax.index
         # Break the combination to list to add new columns on that.
         self.subCSSCountsMax['comblst'] = self.subCSSCountsMax.apply(
@@ -338,12 +448,11 @@ class InfoFromFiles():
         self.subCSSCountsMax['lu'] = self.subCSSCountsMax.apply(
                                 self.assignLu,
                                 axis=1)
-        
+
         # Get the max combination for each subarea
         self.subCSSMaxDict, self.pondfrac = self.getCSSComb(
                 self.subCSSCountsMax,
                 self.waterlus)
-        
 
         # Count appearances of each subarea no to get the subarea areas
         self.subareaArea = self.dfasc['subno'].value_counts().to_dict()
@@ -378,17 +487,38 @@ class InfoFromFiles():
         # Channel length is the length from the subarea outlet to
         # the most distant point. We have P len.
         # If the subarea is an extreme subarea, channel length is the
-        # maximum plen value for all channel cells. 
+        # maximum plen value for all channel cells.
         # If the subarea is an routing subarea, channel length need to be
         # larger than reach length. It will be the reach length + the maximum plen.
         # for non channel area.
         # self.channenLen: maximum plen for channel
+#        self.channenLen = self.dfasc[self.dfasc['strm01'] == '1'  \
+#                ][['subno', 'plen']].groupby('subno')['plen'].max().to_dict()
+
+        # This channel length has a problem and I will
+        # update to use the value from the channel.
+        # Since the non existing stream has been removed,
+        # I can use it directly.
+        # Another thing to pay attention is the 0 values,
+        # SWAT may take it but for downstream, channel can
+        # not equal to slope length. I will process later.
+        self.rchchannenLen = self.getrchChannelLen(self.strmAtt)
         self.channenLen = self.dfasc[self.dfasc['strm01'] == '1'  \
                 ][['subno', 'plen']].groupby('subno')['plen'].max().to_dict()
 
-
 #        # Calculate the percent of pond in one subarea
-#        self.pondPercent = 
+#        self.pondPercent =
+
+
+
+
+    def getrchChannelLen(self, strmshpatt):
+
+        channellen = {}
+        for k, v in strmshpatt.items():
+            channellen[k] = float(v[6])
+
+        return channellen
 
 
 
@@ -396,68 +526,85 @@ class InfoFromFiles():
 
 
     def modifywssubdict(self, wssubflddict):
-        
+
         wsdict2 = copy.deepcopy(wssubflddict)
-        
+
         for key, value in wssubflddict.items():
             wsdict2[key] = {}
             for vidx in range(len(value[0])):
                 #print(wsdict2[key][0][vidx])
                 wsdict2[key][value[0][vidx]] = value[1][vidx]
 
-        
+
         return wsdict2
-                
-        
+
+
 
 
 
     def rmExtraStrm(self, subdemwlst, substreamdict):
         '''
         This function removed the subareas from subnoinstream
-        which do not exist in subnoindemw. 
+        which do not exist in subnoindemw.
         '''
+        # substrm is the list of subnumbers in the tree file
+        # substrmtorm is the stream number only exists in the
+        # tree file but not in the demw files (the raster map)
         substrm = substreamdict.keys()
-        
+
         substrmtorm = [i for i in substrm
                        if not i in subdemwlst]
-        
-        for subid in substrmtorm:
-            
+
+        # Here I just removed them by reconnecting the streams
+        print(substrmtorm)
+
+        for subid in range(len(substrmtorm)):
+#            print("processing subarea: ", subid)
             # Get the upstream and downstrema of the value to be removed
             tempvalue = None
-            tempvalue = substreamdict[subid]
-            
+            tempvalue = substreamdict[substrmtorm[subid]]
+#            print('temo...: ',subid, tempvalue)
+
             # The streams connected by this need to be modified
             # value of dict [sub, downstrm, upstream1, upstream2]
             # upstream1 = tempvalue[2]
-            #print('target: ',tempvalue)
-            
-            # Change the downstream of this subarea's upstream to
-            # its downstream
-            if not substreamdict[tempvalue[2]][1] == '-1':
-                #print('upstream1: ',substreamdict[tempvalue[2]])
-                substreamdict[tempvalue[2]][1] = tempvalue[1]
-                #print('upstream1 lat: ',substreamdict[tempvalue[2]])
-                
-            if not substreamdict[tempvalue[3]][1] == '-1':
-                #print('upstream2: ',substreamdict[tempvalue[3]])
-                substreamdict[tempvalue[3]][1] = tempvalue[1]
-                #print('upstream2 lat: ',substreamdict[tempvalue[3]])
-                
+
+            # Change this subarea's downstream's upstream to
+            # this subarea's downstream
+            # There are two upstreams.
+            # Since we are removing, and the upstreams will have
+            # a downstream, which is the one to be removed. This downstream
+            # will be changed to the to-be-removed stream's downstream
+            # to make the connection.
+            # index 0 is downstream
+#            print('upstream1: ',tempvalue[1],substreamdict[tempvalue[1]])
+            substreamdict[tempvalue[1]][0] = tempvalue[0]
+#            print('upstream1 lat: ', tempvalue[1],substreamdict[tempvalue[1]])
+
+#            print('upstream2...: ',tempvalue[2],substreamdict[tempvalue[2]])
+            substreamdict[tempvalue[2]][0] = tempvalue[0]
+#            print('upstream2 lat: ', tempvalue[2], substreamdict[tempvalue[2]])
+
             # Change the upstream of this subarea's downstream to
             # its first upstream
-            #print('downstream', substreamdict[tempvalue[1]])
-            if not substreamdict[tempvalue[1]][2] == '-1':
-                #print('downstream1: ',substreamdict[tempvalue[1]])
-                substreamdict[tempvalue[1]][2] = tempvalue[2]
-                #print('downstream1 lat: ',substreamdict[tempvalue[1]])
-                
+            # The downstream might have two upstream, only change the one
+            # that is equal to the subarea to be removed.
+#            print('downstream', tempvalue[0], substreamdict[tempvalue[0]][1])
+#            print('downstream', tempvalue[0], substreamdict[tempvalue[0]][2])
+
+            if (substreamdict[tempvalue[0]][1] == substrmtorm[subid]):
+#                print('upstream1: ',substreamdict[tempvalue[0]])
+                substreamdict[tempvalue[0]][1] = tempvalue[1]
+#                print('upstream1 later: ',substreamdict[tempvalue[0]])
+            elif (substreamdict[tempvalue[0]][2] == substrmtorm[subid]):
+#                print('upstream2: ',substreamdict[tempvalue[0]])
+                substreamdict[tempvalue[0]][2] = tempvalue[1]
+#                print('upstream2 later: ',substreamdict[tempvalue[0]])
+
             # First remove keys in dict
-            substreamdict.pop(subid, None)
+            substreamdict.pop(substrmtorm[subid], None)
 
         return substreamdict
-        
 
 
 
@@ -475,26 +622,26 @@ class InfoFromFiles():
 
             dftemp = 0
             dftemp = df[df['subno'] == sid]
-                        
+
             dftemp = dftemp[dftemp[
                     'subCropSoilSlope']==dftemp[
                             'subCropSoilSlope'].max()]
 
             outdict[int(sid)] = dftemp.index[0].split('_')
-            
+
             totalarea = 0
             totalarea = dftemp['subCropSoilSlope'].sum()
-            
+
             # Count the counts of water land uses
             dfwstmp = dftemp[dftemp['lu'].isin(waterlus)]
-            
+
             pondarea = 0
             pondarea = dfwstmp['subCropSoilSlope'].sum()
-            
+
             pondpercent[int(sid)] = pondarea/totalarea
-                        
-            
-        
+
+
+
         return outdict, pondpercent
 
 
@@ -505,7 +652,7 @@ class InfoFromFiles():
         and slopeGroup
         '''
         cropSoilSlope = df['comb'].split('_')
-        
+
         return cropSoilSlope
 
 
@@ -516,7 +663,7 @@ class InfoFromFiles():
         and slopeGroup
         '''
         subno = df['comblst'][0]
-        
+
         return subno
 
 
@@ -527,7 +674,7 @@ class InfoFromFiles():
         and slopeGroup
         '''
         lu = df['comblst'][1]
-        
+
         return lu
 
 
@@ -542,7 +689,7 @@ class InfoFromFiles():
                                      df['luid'],
                                      df['soilid'],
                                      df['slopeGroup'])
-        
+
         return cropSoilSlope
 
 
@@ -562,12 +709,12 @@ class InfoFromFiles():
     def readJSON(self, fn_json):
 
         inf_usrjson = {}
-        
-        with open(fn_json) as json_file:    
+
+        with open(fn_json) as json_file:
             inf_usrjson = json.loads(json_file.read())
         #pprint.pprint(inf_usrjson)
         json_file.close()
-        
+
         return inf_usrjson
 
 
@@ -584,7 +731,7 @@ class InfoFromFiles():
         The table cantains complete information for determining
         channel manning N.
         Here the Earth will be used as default. The inclusion
-        of this table will further assist simulation of 
+        of this table will further assist simulation of
         channel erosion.
         '''
 
@@ -598,7 +745,7 @@ class InfoFromFiles():
         return lif
 
 
-    
+
 
     def readCSVtoDict(self, finCSV):
         '''
@@ -623,7 +770,7 @@ class InfoFromFiles():
         Then LUNO and UPN can be determined.
 
         Columnnames:
-        
+
         '0NASSValue',
         '1CropName', '2Group', '3APEXMGT', '4APEXMGTNO',
         '5LUNOCV_Straight_Poor', '6LUNOCV_Straight_Good',
@@ -645,7 +792,7 @@ class InfoFromFiles():
         #columnname = []
         values = []
         outdict = {}
-        
+
         with open(finCSV) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
@@ -656,13 +803,13 @@ class InfoFromFiles():
                 else:
                     values.append(row)
                     line_count += 1
-                    
+
         for vid in values:
             outdict[vid[0]] = vid
-        
+
         return outdict
 
-    
+
 
 
     def getCentroid(self, shapefile):
@@ -682,7 +829,7 @@ class InfoFromFiles():
         for feature in layer:
             # There is only one field 'DN' in the shapefile.
             values_list = [feature.GetField(j) for j in field_names]
-            
+
             # Now we will write the centroid co-ordinates to a text file
             # Using 'with' will close the file when the loop ends-dont need to call close
             geom = feature.GetGeometryRef()
@@ -691,7 +838,7 @@ class InfoFromFiles():
             centroid = self.CentroidStr2Float(centroid)
             centroidUtm = to_latlon(centroid[0], centroid[1], 16, 'U')
             #print(centroidUtm)
-            
+
             subCentCoord[values_list[0]] = centroidUtm
 
         return subCentCoord
@@ -701,11 +848,11 @@ class InfoFromFiles():
 
         newCentroid = ''.join((ch if ch in '0123456789.-e' else ' ') for ch in centroidStr)
         listOfNumbers = [float(i) for i in newCentroid.split()]
-        
-        return listOfNumbers
-            
 
-    
+        return listOfNumbers
+
+
+
 
 
     # Read in the tree file
@@ -716,21 +863,21 @@ class InfoFromFiles():
         fid.close
 
         treedict = {}
-        
+
         for lidx in range(len(lif)):
             lif[lidx] = lif[lidx].split('\t')
             while '' in lif[lidx]:
                 lif[lidx].remove('')
-                
+
             lif[lidx][-1] = lif[lidx][-1][:-1]
             # 3: downstream
             # 4: 1st upstream
             # 5: 2nd upstream
             # 0: this stream
-            
-            treedict[lif[lidx][0]] = [lif[lidx][0]]+lif[lidx][3:]
 
-        return treedict  
+            treedict[lif[lidx][0]] = lif[lidx][3:] + [lif[lidx][0]]
+
+        return treedict
 
 
 
@@ -740,8 +887,8 @@ class InfoFromFiles():
 
         # Store data into a list
         data = []
-        
-        # Reading files to a list 
+
+        # Reading files to a list
 
         with open(finasc, 'r') as f:
             lif = f.read().splitlines()
@@ -755,13 +902,13 @@ class InfoFromFiles():
             while '' in lif[lidx]:
                 lif[lidx].remove('')
 
-            if lidx > 5:              
+            if lidx > 5:
                 lif[lidx] = list(map(float, lif[lidx]))
         # 0: ncols, 1: nrows, 5: NoDATA, 4: cellsize
         data.append(lif[0][1])
-        data.append(lif[1][1])    
+        data.append(lif[1][1])
         data.append(lif[5][1])
-        
+
         #print(lif[:4])
         del(lif[:7])
         del(lif[-1])
@@ -780,8 +927,8 @@ class InfoFromFiles():
         # Store data into a list
         data = []
         cellsize = 0.0
-        
-        # Reading files to a list 
+
+        # Reading files to a list
 
         with open(finasc, 'r') as f:
             lif = f.read().splitlines()
@@ -790,13 +937,13 @@ class InfoFromFiles():
             lif[lidx] = lif[lidx].split(' ')
             while '' in lif[lidx]:
                 lif[lidx].remove('')
-    
+
         # 0: ncols, 1: nrows, 5: NoDATA, 4: cellsize
         data.append(lif[0][1])
-        data.append(lif[1][1])    
+        data.append(lif[1][1])
         data.append(lif[5][1])
         cellsize = float(lif[4][1])*1.0
-        
+
         del(lif[:7])
         del(lif[-1])
 
@@ -811,14 +958,14 @@ class InfoFromFiles():
 
         return data
 
-        
+
     def readSHP(self, finshp):
         '''
         Read shapefile and return all values in the
         attritube table.
         '''
         subStrAtt = dict()
-        
+
         driver = ogr.GetDriverByName('ESRI Shapefile')
 
         dataSource = driver.Open(finshp, 0)
@@ -861,29 +1008,45 @@ class InfoFromFiles():
         downstream end of the link
         * DOUTMID: distance to the eventual outlet from the
         midpoint of the link.
-        
+
         '''
         field_names = [field.name for field in layer.schema]
 
         # Get the value of each field for all layers
         for feature in layer:
             values_list = [str(feature.GetField(j)) for j in field_names]
-            
+
             subStrAtt[str(values_list[0])] = values_list
 
         return subStrAtt
-            
+
 
     def readWsSubFlds(self, fn_json):
 
         inf_usrjson = {}
-        
-        with open(fn_json) as json_file:    
+
+        with open(fn_json) as json_file:
             inf_usrjson = json.loads(json_file.read())
         #pprint.pprint(inf_usrjson)
         json_file.close()
-        
+
         return inf_usrjson
+
+
+
+    def graphForWS(self, treedict):
+
+        '''
+        represent the watershed using a unreachable graph
+        wsGraph = {node: [neighbors]}
+        '''
+        wsGraph = {}
+
+        for key, value in treedict.items():
+            wsGraph[key] = [k for k, v in treedict.items()
+                            if v[0] == key]
+
+        return wsGraph
 
 
 
@@ -892,7 +1055,7 @@ class InfoFromFiles():
 class WsSubInfo:
 
     def __init__(self, wsidx):
-        
+
         """Constructor."""
         self.WsSubInfoReset()
 
@@ -901,7 +1064,7 @@ class WsSubInfo:
         # Getting the subarea nos of this watershed.
         self.Subnos = None
         self.Subnos = InfoFromFiles.wssubflddict[wsidx][0]
-
+#        print("Hi here:  ", self.Subnos)
         # Removing unneeded information in the subarea
         # wsSubInfoDf: dataframe containing only subareas of the
         # watershed being processing.
@@ -909,15 +1072,16 @@ class WsSubInfo:
         self.InfoDf = copy.deepcopy(InfoFromFiles.dfasc[
             InfoFromFiles.dfasc['subno'].isin(self.Subnos)])#.copy()
 
-        # Finding the graph of the subarea.
-        # To find the graph, the stream file sometimes does not
-        # match the demw. I will use information from the tree file
-        # find the graphs.
-        self.wsGraph = None
-        self.wsGraph = self.graphForWS(
-            self.Subnos,
-            InfoFromFiles.treedict2)
-        
+#         Finding the graph of the subarea.
+#         To find the graph, the stream file sometimes does not
+#         match the demw. I will use information from the tree file
+#         find the graphs.
+#        self.wsGraph = None
+#        self.wsGraph = self.graphForWS(
+#            self.Subnos,
+#            InfoFromFiles.treedict2)
+#        print(self.wsGraph)
+#
         # In order to use the dfs algorithm, here, we need to
         # figure out which is the outlet subarea. These watershed
         # was generated using depth first search. The first one
@@ -929,17 +1093,17 @@ class WsSubInfo:
         ## self.subRouting: a list contains the minus values
         ## when the area of the subarea need to be minus in apex
         ## sub file.
-        
+
         ## self.subPurePath: a list contains the routing path
         ## of the subareas. This was included because the strmAtt
-        ## is a dictionary with positive keys. 
+        ## is a dictionary with positive keys.
         self.subRouting = []
         self.subPurePath = []
         self.subPurePath, self.subRouting = self.dfs_iterative(
-                                    self.wsGraph,
+                                    InfoFromFiles.watershedGraph,
                                     self.wsOutlet)
-        
 
+        print(self.subRouting)
 
 
     def WsSubInfoReset(self):
@@ -976,9 +1140,9 @@ class WsSubInfo:
         json[wsjsonkey2]['geographic']['avg_upland_slp'
                 ] = []
         json[wsjsonkey2]['geographic']['avg_upland_slplen_splg'
-                ] = []          
+                ] = []
         json[wsjsonkey2]['geographic']['uplandmanningn_upn'
-                ] = []     
+                ] = []
         json[wsjsonkey2]['soil']['soilid'] = []
         json[wsjsonkey2]['management']['opeartionid_iops'
                 ] = []
@@ -1017,7 +1181,7 @@ class WsSubInfo:
             # Updating the counter
             wsSubCtr = wsSubCtr + 1
             wssubsolopslatlong[wsSubCtr] = {}
-            
+
             # Add the subarea to the JSON
             subNo = 0
             subNo = int(subPath[subid])
@@ -1025,9 +1189,9 @@ class WsSubInfo:
             # Append ws sub no to the dictionary
             wssubsolopslatlong[wsSubCtr]['wsno'] = wsidx
             wssubsolopslatlong[wsSubCtr]['subno'] = subNo
-            
+
             # Updating the counter
-            # subNorecal: is the original number from 
+            # subNorecal: is the original number from
             # taudem delineation. It is used in the tree
             # for routing. And here we can safely use
             # new numbers?
@@ -1037,14 +1201,14 @@ class WsSubInfo:
 
             #print(subid, subNo)
             # Subarea information are stored in lists
-            # Update subarea NO: for routing 
+            # Update subarea NO: for routing
             json[wsjsonkey2]['model_setup'][
                 'subid_snum'].append(subNorecal)
 
             # Update description line:
             json[wsjsonkey2]['model_setup'][
                 'description_title'].append(subid+1)
-            
+
             # Updating Latitude and longitude
             json[wsjsonkey2]['geographic']['latitude_xct'
                 ].append(InfoFromFiles.subLatLong[subNo][0])
@@ -1057,14 +1221,25 @@ class WsSubInfo:
             # Append iops no to the dictionary
             wssubsolopslatlong[wsSubCtr]['lat'] = InfoFromFiles.subLatLong[subNo][0]
             wssubsolopslatlong[wsSubCtr]['lon'] = InfoFromFiles.subLatLong[subNo][1]
-            
+
             # Updating Average upland slope
             json[wsjsonkey2]['geographic']['avg_upland_slp'
                 ].append(InfoFromFiles.avgSlope[str(subNo)])
 
-            # Updating Average upland slope length
-            json[wsjsonkey2]['geographic']['avg_upland_slplen_splg'
-                ].append(InfoFromFiles.avgSlpLen[str(subNo)])            
+            slplen = 0.0
+            slplen = InfoFromFiles.avgSlpLen[str(subNo)]
+
+            if (slplen > 80.0):
+                # Updating Average upland slope length
+                json[wsjsonkey2]['geographic']['avg_upland_slplen_splg'
+                    ].append(80.0)
+            elif( (slplen > 0.0) and (slplen <= 80.0)):
+                json[wsjsonkey2]['geographic']['avg_upland_slplen_splg'
+                    ].append(slplen)
+            else:
+                # Updating Average upland slope length
+                json[wsjsonkey2]['geographic']['avg_upland_slplen_splg'
+                    ].append(5.0)
 
             # Updating Manning N upland
             # tempCSS: temp list storing the crop soil slope
@@ -1104,7 +1279,7 @@ class WsSubInfo:
             json[wsjsonkey2]['geographic']['channelslope_chs'
                 ].append(InfoFromFiles.strmAtt[str(subNo)][10])
 
-            # Updating Reach slope: 
+            # Updating Reach slope:
             json[wsjsonkey2]['geographic']['reach_slope_rchs'
                 ].append(InfoFromFiles.strmAtt[str(subNo)][10])
 
@@ -1112,26 +1287,51 @@ class WsSubInfo:
             json[wsjsonkey2]['geographic']['channelmanningn_chn'
                 ].append(InfoFromFiles.channelManN[0][4])
 
-            # Updating Channel Length and reach length
-            # Reach (stream in TauDEM) length: strmAtt[str(subNo)][6]
-            # If it is an extreme watershed, channel length is the max Plen
-            if InfoFromFiles.strmAtt[str(subNo)][2] == '-1':
-                json[wsjsonkey2]['geographic']['channellength_chl'
-                    ].append(InfoFromFiles.channenLen[str(subNo)]/1000.0)
-                json[wsjsonkey2]['geographic']['reach_length_rchl'
-                    ].append(InfoFromFiles.channenLen[str(subNo)]/1000.0)
+            subarea_area = 0.0
+            subarea_area = InfoFromFiles.subareaArea[str(subNo)]*InfoFromFiles.cellsize*InfoFromFiles.cellsize/10000.0
+            rchchllen = 0.0
+            chllen = 0.0
+            rchchllen = InfoFromFiles.rchchannenLen[str(subNo)]/1000.0
+            chllen = InfoFromFiles.channenLen[str(subNo)]/1000.0
 
-            # If it is a routing watershed, channel length is the reach len
-            # + max channel TODO: will be modified to get the channel length
-            # for the watershed outlet
+            # make sure we have value not 0, had a minimum of 30 m
+            if (rchchllen < 0.03):
+                rchchllen = 0.03
+            if (chllen < 0.03):
+                chllen = 0.03
+            if (rchchllen > chllen):
+                chllen = rchchllen + 0.01
+#            print("reach, channel", rchchllen, chllen)
+            if (subarea_area < 20):
+                if ((InfoFromFiles.strmAtt[str(subNo)][2] == '-1')
+                    and (InfoFromFiles.strmAtt[str(subNo)][3] == '-1')):
+                    json[wsjsonkey2]['geographic']['channellength_chl'].append(0.5)
+                    json[wsjsonkey2]['geographic']['reach_length_rchl'].append(0.5)
+                # If it is a routing watershed, channel length is the reach len
+                # + max channel TODO: will be modified to get the channel length
+                # for the watershed outlet
+                else:
+                    json[wsjsonkey2]['geographic']['channellength_chl'
+                       ].append(0.8)
+                    json[wsjsonkey2]['geographic']['reach_length_rchl'
+                         ].append(0.5)
             else:
-                json[wsjsonkey2]['geographic']['channellength_chl'
-                    ].append(float(
-                        InfoFromFiles.strmAtt[str(subNo)][6])/1000.0+
-                        InfoFromFiles.channenLen[str(subNo)]/1000.0)
-                json[wsjsonkey2]['geographic']['reach_length_rchl'
-                    ].append(float(
-                        InfoFromFiles.strmAtt[str(subNo)][6])/1000.0)            
+                # -1 means a downstream subarea
+                if ((InfoFromFiles.strmAtt[str(subNo)][2] == '-1')
+                    and (InfoFromFiles.strmAtt[str(subNo)][3] == '-1')):
+                    json[wsjsonkey2]['geographic']['channellength_chl'
+                        ].append(rchchllen)
+                    json[wsjsonkey2]['geographic']['reach_length_rchl'
+                        ].append(rchchllen)
+                                                                                                                                                                                             # If it is a routing watershed, channel length is the reach len
+                # + max channel TODO: will be modified to get the channel length
+                # for the watershed outlet
+                else:
+                    json[wsjsonkey2]['geographic']['channellength_chl'
+                        ].append(chllen)
+                    json[wsjsonkey2]['geographic']['reach_length_rchl'
+                         ].append(rchchllen)
+
 
             # Updating Watershed area:
             #print(float(GetSubInfo.subareaArea[str(subNo)])*GetSubInfo.cellsize/10000.0)
@@ -1139,15 +1339,16 @@ class WsSubInfo:
             if '-' in self.subRouting[subid]:
                 json[wsjsonkey2]['geographic']['wsa_ha'
                     ].append('-%.5f' %(InfoFromFiles.subareaArea[str(subNo)]
-                         *InfoFromFiles.cellsize/10000.0))
+                         *InfoFromFiles.cellsize*InfoFromFiles.cellsize/10000.0))
             else:
                 json[wsjsonkey2]['geographic']['wsa_ha'
                 ].append('%.5f' %(InfoFromFiles.subareaArea[str(subNo)]
-                         *InfoFromFiles.cellsize/10000.0))           
+                         *InfoFromFiles.cellsize*InfoFromFiles.cellsize/10000.0))
 
 #            json[wsjsonkey2]['pond']['frac_pond_pcof'
 #                ].append(InfoFromFiles.pondfrac[subNo])
-            # At this time, tile drainage is sitll unknow, but need to be 
+
+            # At this time, tile drainage is sitll unknow, but need to be
             # initiated.
             json[wsjsonkey2]['drainage']['drainage_depth_idr'
                 ].append('0')
@@ -1172,7 +1373,7 @@ class WsSubInfo:
         till the neighbours of the root. Stack, first in,
         first come out. It always find the end of the branch.
         '''
-        
+
         stack, path, pathminus = [start], [], []
 
         # Stack as the starting point
@@ -1193,7 +1394,7 @@ class WsSubInfo:
                     neighbor = '-%s' %(graph[vertex][nbid])
                 else:
                     neighbor = graph[vertex][nbid]
-                    
+
                 stack.append(neighbor)
 
         return path, pathminus
@@ -1219,14 +1420,14 @@ class WsSubInfo:
         vertex: start with the outlet.
         '''
         absvertex = str(abs(int(vertex)))
-        
+
         path += [absvertex]
-        
+
         pathminus += [vertex]
-        
+
         for nbid in range(len(graph[absvertex])):
             neighbor = graph[absvertex][nbid]
-            
+
             if neighbor not in path:
                 if nbid > 0:
                     neighbor = '-%s' %(neighbor)
@@ -1236,7 +1437,12 @@ class WsSubInfo:
         return path, pathminus
 
 
-    def graphForWS(self, subnos, dicttree):
+
+
+
+
+
+    def graphForWS_old(self, subnos, dicttree):
 
         '''
         represent the watershed using a unreachable graph
@@ -1248,17 +1454,17 @@ class WsSubInfo:
         for sidx in subnos:
             wsGraph[sidx] = [k for k, v in dicttree.items()
                             if v[1] == sidx]
-        
+
         return wsGraph
 
 
 class apexfuncs():
-    
+
     def updatejson_sit(self, json_sit, infosrc):
-        
+
         json_sit["model_setup"]["siteid"]= "1"
         json_sit["model_setup"]["description_line1"]= "Site1"
-        json_sit["model_setup"]["generation_date"]= time.strftime("%d/%m/%Y") 
+        json_sit["model_setup"]["generation_date"]= time.strftime("%d/%m/%Y")
         json_sit["model_setup"]["nvcn"]= "4"
         json_sit["model_setup"]["outflow_release_method_isao"]= "0"
 
@@ -1283,7 +1489,7 @@ class apexfuncs():
 
         return json_sit
 
-            
+
 
 #######################################################
 # Call Functions
@@ -1297,8 +1503,8 @@ apexfuncs = apexfuncs()
 ## Json file storing all necessary variables
 # After getting the information for routing, it is time
 # to process the information into the json files.
-wsvarjson = InfoFromFiles.readJSON(fin_wssubjson) 
-       
+wsvarjson = InfoFromFiles.readJSON(fin_wssubjson)
+
 sitejson = InfoFromFiles.readJSON(fin_tmpsitjson)
 
 
@@ -1308,22 +1514,23 @@ sitejson = InfoFromFiles.readJSON(fin_tmpsitjson)
 for wsk, wsv in InfoFromFiles.wssubflddict.items():
     wsjsonkey = 'watershed%s' %(wsk)
     wsvarjson[wsjsonkey] = wsvarjson['tempws']
-    
+
 # If key is not present in dictionary, then del can throw KeyError
 try:
     del wsvarjson["tempws"]
 except KeyError:
     print("Key 'tempws' not found")
-       
 
-           
+
+
 wsvarjson2 = {}
 # Then, updating the json file
 for wsid2 in range(len(InfoFromFiles.wssubflddict)):
-    
+
+    print("processing watershed no: ", wsid2+1)
     tempwsInfo = None
     tempwsInfo = WsSubInfo(str(wsid2+1))
-    
+
     wsjsonkey2 = 'watershed%i' %(wsid2+1)
     # Update the json file
     InfoFromFiles.wsSubCtr,InfoFromFiles.wsSubSolOpsLatLon = tempwsInfo.modifywsJSON(
@@ -1336,18 +1543,18 @@ for wsid2 in range(len(InfoFromFiles.wssubflddict)):
             InfoFromFiles
             )
 
-    
+
     wsvarjson2[wsjsonkey2] = copy.deepcopy(wsvarjson[wsjsonkey2])
 
 # Update site json information
 sitejson = apexfuncs.updatejson_sit(
         sitejson,
-        wsvarjson2) 
-    
-    
-    
-    
-# Write the information into a json file    
+        wsvarjson2)
+
+
+
+
+# Write the information into a json file
 with open(fout_wssubvarjson, 'w') as outfile:
     json.dump(wsvarjson2, outfile)
 
@@ -1359,7 +1566,7 @@ with open(fout_sitejson, 'w') as outfile3:
 
 
 
-# Update 
+# Update
 
 
 
@@ -1376,4 +1583,5 @@ with open(fout_sitejson, 'w') as outfile3:
 
 
 #######################################################
+
 

@@ -51,19 +51,20 @@ import json
 # Input and output file defining
 #######################################################
 fddata = sys.argv[1]
-scenario = sys.argv[2]
+scenariofdname = sys.argv[2]
 #fddata = 'devfld'
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scenariofdname
     )
 
 
 
 fin_wssubsollujson = os.path.join(
     fdapexrun,
-    'wssubsollulatlon%s.json' %(scenario)
+    'wssubsollulatlon%s.json' %(scenariofdname[3:])
     )
 
 
@@ -81,8 +82,13 @@ class apexfuncs():
         fn_opscom = r"%s/%s" %(runfolder,
                                outfn_opscom)
         
-        if os.path.isfile(fn_opscom):
+        # Remove file if exists:
+        if (os.path.exists(fn_opscom)):
             os.remove(fn_opscom)
+
+
+        #if os.path.isfile(fn_opscom):
+        #    os.remove(fn_opscom)
               
         outfid_opscom = 0    
         outfid_opscom = open(fn_opscom, "w")

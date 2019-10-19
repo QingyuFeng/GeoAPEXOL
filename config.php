@@ -1,7 +1,7 @@
 <?php
     // application folder name
     defined('FDAPP')
-    or define('FDAPP', 'v2geoapexol');
+    or define('FDAPP', 'geoapexol');
 
     // Load global variables
     require('/var/www/html/' . FDAPP . '/php/globals.php');

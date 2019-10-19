@@ -20,13 +20,15 @@ import json
 #######################################################
 fddata = sys.argv[1]
 fdclinear = sys.argv[2]
+scenariofdname = sys.argv[3]
 
 #fddata = 'devfld'
 #fdclinear = 'clinear'
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scenariofdname
     )
 
 fin_wssubsollujson = os.path.join(

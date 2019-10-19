@@ -76,6 +76,7 @@ fddata = sys.argv[1]
 fin_nassmgtupn = sys.argv[2]
 fin_chn = sys.argv[3]
 utmfd =  sys.argv[4]
+scenariofdname = sys.argv[5]
 
 
 from utm.conversion import to_latlon, from_latlon, latlon_to_zone_number, latitude_to_zone_letter
@@ -152,6 +153,7 @@ fin_lu = os.path.join(
 fin_wssubjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'var1wssub.json'
     )
 
@@ -174,6 +176,7 @@ fin_demwreclasspair = os.path.join(
 fin_tmpsitjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'tmpsitefile.json'
     ) 
 
@@ -181,25 +184,27 @@ fin_tmpsitjson = os.path.join(
 fout_wssubvarjson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'runsub.json'
     )
 
 fout_wssubsollujson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'wssubsollulatlon.json'
     )
 
 fout_sitejson = os.path.join(
     fddata,
     'apexruns',
+    scenariofdname,
     'runsite.json'
     )
 #######################################################
 # Defining classes
 #######################################################
 class GetSubInfo():
-
     def __init__(self):
         """Constructor."""
 
@@ -318,8 +323,89 @@ class GetSubInfo():
         # uses that are water.
         self.waterlus = map(str, [0,81,83,87,92,111,112,190,195])
         # ~ turn True to False
-        self.dfasc = self.dfasc[~self.dfasc['luid'].isin(self.waterlus)]
-        
+        #self.dfasc = self.dfasc[~self.dfasc['luid'].isin(self.waterlus)]
+       
+        # Deal with the 0 values in soil and land use
+#        print(self.dfasc['soilid'].value_counts().idxmax())
+#        print(self.dfasc['luid'].value_counts().idxmax())
+#        print(self.dfasc['slope'].value_counts().idxmax())
+        # Mocify the 0 values or water to the most frequent values in
+        # soil
+        # 1. Get unique values of the soil list
+        self.uniqsoils = self.dfasc['soilid'].unique()
+
+        if ("0" in self.uniqsoils):
+            # Find the most frequent soil ids in the soil list(This should
+            # not be 0)
+            self.mostsoilid = self.dfasc['soilid'].value_counts().idxmax()
+            if (self.mostsoilid == '0') or (self.mostsoilid == '1'):    
+                self.mostsoilid = "164331"
+            # Create an np array to be added in the pandas to replace the 0s
+            # with the most soil id
+            self.mostsoilarray = np.array([self.mostsoilid] * len(self.dfasc[self.dfasc['soilid'] == '0']))
+
+            # Modify
+            self.dfasc.loc[self.dfasc['soilid'] == '0', "soilid"] = self.mostsoilarray
+
+        # Deal with land use
+        # If there is water or other unwanted land use
+        # Mocify the 0 values or water to the most frequent values in
+        # landuse
+        # 1. Get unique values of the soil list
+        self.uniqlus = self.dfasc['luid'].unique()
+        for luuid in self.uniqlus:
+            if (luuid in self.waterlus):
+#                print(len(self.dfasc[self.dfasc['luid'] == luuid]))
+                # Find the most frequent soil ids in the soil list(This should
+                # not be 0)
+                self.mostluid = self.dfasc['luid'].value_counts().idxmax()
+
+                if self.mostluid in self.waterlus:
+                    self.mostluid = "1"
+                # Create an np array to be added in the pandas to replace the 0s
+                # with the most soil id
+                self.mostluarray = np.array([self.mostluid] * len(self.dfasc[self.dfasc['luid'] == luuid]))
+
+#                print(self.dfasc.loc[self.dfasc['luid'] == luuid, "luid"])
+
+                # Modify
+                self.dfasc.loc[self.dfasc['luid'] == luuid, "luid"] = self.mostluarray
+
+
+        # Modify for the scenarios
+        self.scenarioname = None
+        self.scenariono = None
+        self.scenarioname = scenariofdname[3:]
+         
+        if (self.scenarioname == "fallow"):
+            self.scenariono = "65"
+            # Create an array of the length of the dataframe 
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+        elif (self.scenarioname == "trees"):
+            self.scenariono = "141"
+            # Create an array of the length of the dataframe
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+        elif (self.scenarioname == "peregrass"):
+            self.scenariono = "176"
+            # Create an array of the length of the dataframe
+            # and all lu numbers were changed to the scenario no
+            self.modscenluarray = np.array([self.scenariono] * len(
+                self.dfasc))
+            # Modify the lu numbers in the dataframe to match
+            # the intended scenario
+            self.dfasc['luid'] = self.modscenluarray
+
+
         # Generate CropSoilSlopeNumber
         self.dfasc['subCropSoilSlope'] = self.dfasc.apply(
                                         self.addCropSoilSlope,
@@ -369,9 +455,9 @@ class GetSubInfo():
         # from the plen file (results of gridnet)
         # This value may need to be updated later. The method
         # to calculate it needs further exploration
-        self.avgSlpLen = self.dfasc[self.dfasc['strm01'] == '0'  \
-                ][['subno', 'plen']].groupby('subno')['plen'].mean().to_dict()
-
+#        self.avgSlpLen = self.dfasc[self.dfasc['strm01'] == '0'  \
+#                ][['subno', 'plen']].groupby('subno')['plen'].mean().to_dict()
+        self.avgSlpLen = self.dfasc[['subno', 'plen']].groupby('subno')['plen'].mean().to_dict()
         ## Subarea Centroid
         # The latitude and longitude values for the
         # centroids of each subarea.
@@ -392,9 +478,22 @@ class GetSubInfo():
         # larger than reach length. It will be the reach length + the maximum plen.
         # for non channel area.
         # self.channenLen: maximum plen for channel
+
+        self.rchchannenLen = self.getrchChannelLen(self.strmAtt)
         self.channenLen = self.dfasc[self.dfasc['strm01'] == '1'  \
                 ][['subno', 'plen']].groupby('subno')['plen'].max().to_dict()
+        
+        
 
+    def getrchChannelLen(self, strmshpatt):
+        
+        channellen = {}
+        for k, v in strmshpatt.items():
+            channellen[k] = float(v[6])
+            
+        return channellen
+                    
+        
         
     
     def modifywssubdict(self, wssubflddict):
@@ -439,54 +538,69 @@ class GetSubInfo():
     
     
     
-    
     def rmExtraStrm(self, subdemwlst, substreamdict):
         '''
         This function removed the subareas from subnoinstream
         which do not exist in subnoindemw. 
         '''
+        # substrm is the list of subnumbers in the tree file
+        # substrmtorm is the stream number only exists in the 
+        # tree file but not in the demw files (the raster map)
         substrm = substreamdict.keys()
         
-        substrmtorm = [i for i in substrm if not i in subdemwlst]
+        substrmtorm = [i for i in substrm
+                       if not i in subdemwlst]
         
-        for subid in substrmtorm:
+        # Here I just removed them by reconnecting the streams
+#        print(substrmtorm)
+        
+        print(substrmtorm)
+        
+        for subid in range(len(substrmtorm)):
             
+#            print("processing subarea: ", subid)
             # Get the upstream and downstrema of the value to be removed
-            tempvalue = substreamdict[subid]
+            tempvalue = None
+            tempvalue = substreamdict[substrmtorm[subid]]
+#            print('temo...: ',subid, tempvalue)
             
             # The streams connected by this need to be modified
             # value of dict [sub, downstrm, upstream1, upstream2]
             # upstream1 = tempvalue[2]
-            #print('target: ',tempvalue)
             
-            # Change the downstream of this subarea's upstream to
-            # its downstream
-            if not substreamdict[tempvalue[2]][1] == '-1':
-                #print('upstream1: ',substreamdict[tempvalue[2]])
-                substreamdict[tempvalue[2]][1] = tempvalue[1]
-                #print('upstream1 lat: ',substreamdict[tempvalue[2]])
-                
-            if not substreamdict[tempvalue[3]][1] == '-1':
-                #print('upstream2: ',substreamdict[tempvalue[3]])
-                substreamdict[tempvalue[3]][1] = tempvalue[1]
-                #print('upstream2 lat: ',substreamdict[tempvalue[3]])
-                
-            # Change the upstream of this subarea's downstream to
-            # its first upstream
-            #print('downstream', substreamdict[tempvalue[1]])
-            if not substreamdict[tempvalue[1]][2] == '-1':
-                #print('downstream1: ',substreamdict[tempvalue[1]])
+            # Change this subarea's downstream's upstream to
+            # this subarea's downstream
+            # There are two upstreams.
+            # Since we are removing, and the upstreams will have 
+            # a downstream, which is the one to be removed. This downstream
+            # will be changed to the to-be-removed stream's downstream 
+            # to make the connection. 
+            # index 0 is downstream
+           
+
+            if (substreamdict[tempvalue[1]][2] == substrmtorm[subid]):
+#                print('downstream upstream 1: ',substreamdict[tempvalue[1]])
                 substreamdict[tempvalue[1]][2] = tempvalue[2]
-                #print('downstream1 lat: ',substreamdict[tempvalue[1]])
-                
+#                print('downstream upstream 1 later: ',substreamdict[tempvalue[1]])
+            elif (substreamdict[tempvalue[1]][3] == substrmtorm[subid]):
+#                print('downstream upstream 2: ',substreamdict[tempvalue[1]])
+                substreamdict[tempvalue[1]][3] = tempvalue[2]
+#                print('downstream upstream 2 later: ',substreamdict[tempvalue[1]])
+
+#            print('upstream2...: ',tempvalue[2],substreamdict[tempvalue[2]])
+            substreamdict[tempvalue[2]][1] = tempvalue[1]
+#            print('upstream2 lat: ', tempvalue[2],substreamdict[tempvalue[2]])
+
+#            print('upstream2...: ',tempvalue[3],substreamdict[tempvalue[3]])
+            substreamdict[tempvalue[3]][1] = tempvalue[1]
+#            print('upstream2 lat: ', tempvalue[3], substreamdict[tempvalue[3]])
+
+            # First remove keys in dict
+            substreamdict.pop(substrmtorm[subid], None)
             # First remove keys in dict
             substreamdict.pop(subid, None)
 
-            
-        
-        return substreamdict
-        
-        
+        return substreamdict    
 
 
 
@@ -1041,12 +1155,21 @@ class WatershedJSON():
             # Append iops no to the dictionary
             wssubsolopslatlong[subid+1]['lat'] = GetSubInfo.subLatLong[subNo][0]
             wssubsolopslatlong[subid+1]['lon'] = GetSubInfo.subLatLong[subNo][1]
-            
+
 
             # Updating Average upland slope
-            
-            json['tempws']['geographic']['avg_upland_slp'
-                ].append(GetSubInfo.avgSlope[str(subNo)])
+            slplen = 0.0
+            slplen = GetSubInfo.avgSlope[str(subNo)]
+
+            if (slplen > 50.0):
+                json['tempws']['geographic']['avg_upland_slp'
+                    ].append(50.0)
+            elif( (slplen > 0.0) and (slplen <= 80.0)):
+                json['tempws']['geographic']['avg_upland_slp'
+                    ].append(slplen)
+            else:
+                json['tempws']['geographic']['avg_upland_slp'
+                    ].append(5.0)
 
             # Updating Average upland slope length
             json['tempws']['geographic']['avg_upland_slplen_splg'
@@ -1097,24 +1220,60 @@ class WatershedJSON():
             json['tempws']['geographic']['channelmanningn_chn'
                 ].append(GetSubInfo.channelManN[0][4])
 
-            # Updating Channel Length and reach length
-            # Reach (stream in TauDEM) length: strmAtt[str(subNo)][6]
-            # If it is an extreme watershed, channel length is the max Plen
-            if GetSubInfo.strmAtt[str(subNo)][2] == '-1':
-                json['tempws']['geographic']['channellength_chl'
-                    ].append(GetSubInfo.channenLen[str(subNo)]/1000.0)
-                json['tempws']['geographic']['reach_length_rchl'
-                    ].append(GetSubInfo.channenLen[str(subNo)]/1000.0)
 
-            # If it is a routing watershed, channel length is the reach len
-            # + max channel TODO: will be modified to get the channel length
-            # for the watershed outlet
+            subarea_area = 0.0
+            subarea_area = GetSubInfo.subareaArea[str(subNo)]*GetSubInfo.cellsize*GetSubInfo.cellsize/10000.0
+            rchchllen = 0.0
+            chllen = 0.0
+            rchchllen = GetSubInfo.rchchannenLen[str(subNo)]/1000.0
+            chllen = GetSubInfo.channenLen[str(subNo)]/1000.0
+            # make sure we have value not 0, had a minimum of 30 m
+            if (rchchllen < 0.03):
+                rchchllen = 0.03
+            if (chllen < 0.03):
+                chllen = 0.03 
+            if (rchchllen >= chllen):
+                chllen = rchchllen + 0.01
+            print("reach, channel", rchchllen, chllen)
+            if (subarea_area < 20.0):
+                # Updating Channel Length and reach length
+                # Reach (stream in TauDEM) length: strmAtt[str(subNo)][6]
+                # If it is an extreme watershed, channel length is the max Plen
+                if ((GetSubInfo.strmAtt[str(subNo)][2] == '-1')
+                    and (GetSubInfo.strmAtt[str(subNo)][3] == '-1')):
+                    json['tempws']['geographic']['channellength_chl'
+                     ].append(0.5)
+                    json['tempws']['geographic']['reach_length_rchl'
+                     ].append(0.5)
+
+                # If it is a routing watershed, channel length is the reach len
+                # + max channel TODO: will be modified to get the channel length
+                # for the watershed outlet
+                else:
+                    json['tempws']['geographic']['channellength_chl'
+                        ].append(0.8)
+                    json['tempws']['geographic']['reach_length_rchl'
+                        ].append(0.5)
+
             else:
-                json['tempws']['geographic']['channellength_chl'
-                    ].append(float(GetSubInfo.strmAtt[str(subNo)][6])/1000.0+
-                             GetSubInfo.channenLen[str(subNo)]/1000.0)
-                json['tempws']['geographic']['reach_length_rchl'
-                    ].append(float(GetSubInfo.strmAtt[str(subNo)][6])/1000.0)            
+                # Updating Channel Length and reach length
+                # Reach (stream in TauDEM) length: strmAtt[str(subNo)][6]
+                # If it is an extreme watershed, channel length is the max Plen
+                if ((GetSubInfo.strmAtt[str(subNo)][2] == '-1')
+                    and (GetSubInfo.strmAtt[str(subNo)][3] == '-1')):
+                    json['tempws']['geographic']['channellength_chl'
+                        ].append(rchchllen)
+                    json['tempws']['geographic']['reach_length_rchl'
+                        ].append(rchchllen)
+
+                # If it is a routing watershed, channel length is the reach len
+                # + max channel TODO: will be modified to get the channel length
+                # for the watershed outlet
+                else:
+                    json['tempws']['geographic']['channellength_chl'
+                        ].append(chllen)
+                    json['tempws']['geographic']['reach_length_rchl'
+                        ].append(rchchllen)            
 
             # Updating Watershed area:
             #print(float(GetSubInfo.subareaArea[str(subNo)])*GetSubInfo.cellsize/10000.0)
@@ -1122,11 +1281,11 @@ class WatershedJSON():
             if '-' in GetSubInfo.subRouting[subid]:
                 json['tempws']['geographic']['wsa_ha'
                     ].append('-%.5f' %(GetSubInfo.subareaArea[str(subNo)]
-                         *GetSubInfo.cellsize/10000.0))
+                         *GetSubInfo.cellsize*GetSubInfo.cellsize/10000.0))
             else:
                 json['tempws']['geographic']['wsa_ha'
                 ].append('%.5f' %(GetSubInfo.subareaArea[str(subNo)]
-                         *GetSubInfo.cellsize/10000.0))           
+                         *GetSubInfo.cellsize*GetSubInfo.cellsize/10000.0))           
 
             # At this time, tile drainage is sitll unknow, but need to be 
             # initiated.
@@ -1223,4 +1382,5 @@ with open(fout_sitejson, 'w') as outfile3:
 
 
 #######################################################
+
 

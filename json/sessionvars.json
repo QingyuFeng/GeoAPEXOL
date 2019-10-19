@@ -3,7 +3,8 @@
     "demcellsize":30.0, 
 
 	"extent": 0,
-	"zoomLoc": "47906",
+    "extentview": 0,
+    "zoomLoc": "",
     "izoom": "0",
 
 	"oltstep": 0,
@@ -36,11 +37,31 @@
     "dlystartyr": 2003,
     "dlyendyr": 2013, 
 
+    "runscenario_dft":{
+        "s1":"nass2016",
+        "s1_full":"NASS 2016"
+    },
+
     "runscenario":{
         "s1":"nass2016",
         "s1_full":"NASS 2016"
-    }, 
-    
-    "inewapexrun":0
+    },
+
+
+    "inewapexrun":0,
+
+
+    "ierrstep":0,
+    "msgerrstep":"",
+
+    "ilocfound": 1,
+    "errlocfound":""
+
+
+
+
+
+
+
 
 }

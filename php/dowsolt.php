@@ -22,34 +22,33 @@
     }
     else
     {
+        $_SESSION["SSVAR"]["ierrstep"] = 1;
+        $_SESSION["SSVAR"]["msgerrstep"] = "ERROR: error generating json for outlet !!!";
         addToLog('Json was wrong for outlet\n');
-        //$error[]="<p>Could not save json for outlet<p>";
+        return;
     }
 
-    addToLog('Running TauDEM to get watershed with selected outlet');
+    addToLog('Running TauDEM to get watershed with selected outlet: start');
     if (false == $taudemfuncs->getWSfromOutlet($workingDir)) {
-        addToLog('Error generating watershed with outlet');
-        //$error[]="<p>Error generating watershed with outlet <p>";
+        $_SESSION["SSVAR"]["ierrstep"] = 1;
+        $_SESSION["SSVAR"]["msgerrstep"] = "ERROR: failed generating watershed for outlet !!!";
+        return;
     }
+    addToLog('Running TauDEM to get watershed with selected outlet: done');
 
-    addToLog('Processing demw to for display');
+    addToLog('Processing demw to for display: start');
     if (false == $gdalfuncs->procDemwDispay($workingDir)) {
-        addToLog("Error processing demw for display");
+        $_SESSION["SSVAR"]["ierrstep"] = 1;
+        $_SESSION["SSVAR"]["msgerrstep"] = "ERROR: failed processing dem for display !!!";
+        return;
     }
+    addToLog('Processing demw to for display: done');
+    
     $zone = $_SESSION["SSVAR"]['utmzone'];  
-
     $scenarioarr = $_SESSION["SSVAR"]["runscenario"];    
     addToLog("Updating map files for watershed with outlet");
     $baseMapFile = $globwebdir . "olmap/ol_baseline_google.map";
     $mapfilefuncs->updateMapFileOlt($workingDir,"taudem.map",true,false,true,false,false,$zone,$baseMapFile, $scenarioarr);
-
-
-
-
-
-
-
-
 
 
 

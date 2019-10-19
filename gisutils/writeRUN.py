@@ -51,12 +51,13 @@ import json
 # Input and output file defining
 #######################################################
 fddata = sys.argv[1]
-runscenario = sys.argv[2]
+scenariofdname = sys.argv[2]
 #fddata = 'devfld'
 
 fdapexrun = os.path.join(
     fddata,
-    'apexruns'
+    'apexruns',
+    scenariofdname
     )
 
 fin_wssubvarjson = os.path.join(
@@ -107,7 +108,7 @@ class apexfuncs():
         for wsid in range(len(subvars.keys())):
         # APEXRUN is read with free format in APEX.exe
             runfid.writelines(u"%-10s%7i%7i%7i%7i%7i%7i\n" %(\
-                            "RSUB%i_%s" %(wsid+1, scenario) ,\
+                    "RSUB%i_%s" %(wsid+1, scenario[3:]) ,\
                             1,\
                             1,\
                             1,\
@@ -129,7 +130,7 @@ class apexinputs():
         # Initiate all variables
         self.fidrun = 0
         self.fidrun = apexfuncs.initrunfiles(fdapexrun)
-        apexfuncs.write_runlines(self.fidrun, self.subvars, runscenario)
+        apexfuncs.write_runlines(self.fidrun, self.subvars, scenariofdname)
         
         # Close files
         apexfuncs.closerunfiles(self.fidrun)

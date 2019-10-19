@@ -54,16 +54,11 @@ class genefuncs
     public function doZoom($zoomLoc,$latitude,$longitude)
     {
         global $globgisdir;
-
-        $arr = array($latitude,$longitude);
-
+        // Arr has lat long and return message
+        $str2 = sprintf(">>%s<<",$zoomLoc);
         $zoomLoc = trim($zoomLoc);
         $found = 0;
-
-        if (strlen($zoomLoc) <= 0)
-            return;
-
-        $str2 = sprintf(">>%s<<",$zoomLoc);
+        $arr = array($latitude,$longitude,$str2,$found);
 
         if (is_numeric($zoomLoc)) {
             // zip code search
@@ -87,6 +82,8 @@ class genefuncs
                                 $arr[1] = floatval($tok[$len-3]) * -1;
                             //print(":" . $len . ":" .$arr[0] . " ***  " . $arr[1]);
                                 $found = 1;
+                                $arr[2]=$str2;
+                                $arr[3]=$found;
                                 break;
                             }
                         }
@@ -94,7 +91,8 @@ class genefuncs
             fclose($zf);
             if ($found == 0) {
                 $str2 = sprintf("<br>Zip code %d not found<br>",$zipVal);
-                print($str2);
+                $arr[2]=$str2;
+                $arr[3]=$found;
             }
             } else {
                 print("<br>gps2-zip.txt not found<br>");
@@ -117,8 +115,15 @@ class genefuncs
                     $arr[1] = floatval($city);
                     $arr[0] = floatval($state);
                     $found = 1;
+
+                    $str2 = sprintf("Found longitude %d and latitide: %d<br>",$city,$state);
+                    $arr[2]=$str2;
+                    $arr[3]=$found;
                 } else
-                {print("Could not find longitude, latitude location<b>");}
+                {
+                    $str2 = sprintf("Couldn't find latitude %d and longitude: %d<br>",$city,$state);
+                    $arr[2]=$str2;
+                }
             }
             else
             {
@@ -156,6 +161,10 @@ class genefuncs
                                 $arr[0] = floatval($tok[$len-2]);
                                 $arr[1] = floatval($tok[$len-3]) * -1;
                                 $found = 1;
+                                
+                                $str2 = sprintf("Found %s, %s<br>",$city,$state);
+                                $arr[2]=$str2;
+                                $arr[3]=$found;
                                 break;
                             }
                         }
@@ -165,7 +174,7 @@ class genefuncs
                 if ($found == 0)
                 {
                     $str2 = sprintf("<br>%s, %s not found<br>",$city,$state);
-                    print($str2);
+                    $arr[2]=$str2;
                 }
             }
         }
@@ -192,7 +201,7 @@ class genefuncs
         } elseif(is_file($target)) {
             unlink( $target );
         }
-}
+    }
 
 
 
